@@ -29,16 +29,15 @@ namespace Dman.SimpleJson
     {
         public JToken SavedToken => _data;
         private readonly JObject _data;
-        
         private readonly JsonSerializer _serializer;
         
-        private SaveData(JsonSerializer serializer, JObject data = null)
+        private SaveData(JsonSerializer serializer, JObject data)
         {
             _serializer = serializer;
-            _data = data ?? new JObject();
+            _data = data;
         }
 
-        internal static SaveData Empty(JsonSerializer serializer) => new(serializer);
+        internal static SaveData Empty(JsonSerializer serializer) => new(serializer, new JObject());
         internal static SaveData Loaded(JObject data, JsonSerializer serializer) => new(serializer, data);
             
         public void Set<T>(string key, T value, TokenMode mode)
@@ -71,6 +70,17 @@ namespace Dman.SimpleJson
             }
         }
 
+        public bool TryGet<T>(string key, out T value, TokenMode mode)
+        {
+            if (TryGet(key, out var obj, typeof(T), mode))
+            {
+                value = (T)obj;
+                return true;
+            }
+            value = default;
+            return false;
+        }
+        
         public bool TryGet(string key, out object value, Type objectType, TokenMode mode)
         {
             if (!_data.TryGetValue(key, out JToken existing))
@@ -104,17 +114,6 @@ namespace Dman.SimpleJson
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
-        }
-        
-        public bool TryGet<T>(string key, out T value, TokenMode mode)
-        {
-            if (TryGet(key, out var obj, typeof(T), mode))
-            {
-                value = (T)obj;
-                return true;
-            }
-            value = default;
-            return false;
         }
 
         public bool HasKey(string key)

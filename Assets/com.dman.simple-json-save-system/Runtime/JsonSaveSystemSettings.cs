@@ -1,8 +1,6 @@
-using System.Collections.Generic;
+using System.IO;
 using Dman.SimpleJson.FancyJsonSerializer;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,18 +8,21 @@ namespace Dman.SimpleJson
 {
     public class JsonSaveSystemSettings : ScriptableObject
     {
-        private static JsonSaveSystemSettings Singleton => _singleton ??= GetSingleton();
-        private static JsonSaveSystemSettings _singleton;
-        
-        public static string SaveFolderName => Singleton.saveFolderName;
+        /// <summary>
+        /// The save folder under which all files are saved
+        /// </summary>
+        public static string FullSaveFolderPath => Path.Combine(Application.persistentDataPath, Singleton.saveFolderName);
         public static string DefaultSaveFileName => Singleton.defaultSaveFileName;
-        public static JsonSerializer Serializer => _defaultSerializer ??= Singleton.CreateSerializer();
-        private static JsonSerializer _defaultSerializer;
         
         [Header("All values are read on first use of save system. Changes during runtime are ignored.")]
         [SerializeField] private string saveFolderName = "SaveContexts";
         [SerializeField] private string defaultSaveFileName = "root";
-
+        
+        public static JsonSerializer Serializer => _defaultSerializer ??= Singleton.CreateSerializer();
+        private static JsonSerializer _defaultSerializer;
+        private static JsonSaveSystemSettings Singleton => _singleton ??= GetSingleton();
+        private static JsonSaveSystemSettings _singleton;
+        
         public static JsonSaveSystemSettings Create(string folder, string defaultFile)
         {
             var newSettings = CreateInstance<JsonSaveSystemSettings>();
@@ -49,13 +50,13 @@ namespace Dman.SimpleJson
             if(!suppressWarningDangerously && _singleton != null)
             {
                 Debug.LogWarning("Forcing override of JsonSaveSystemSettings object after it has already been used. " +
-                                 "This is dangerous and should only be done during startup.");
+                                 "This may lead to save file inconsistencies and should only be done during early startup.");
             }
             _singleton = settings;
             _defaultSerializer = null;
         }
-        
-        public static JsonSaveSystemSettings GetSingleton()
+
+        private static JsonSaveSystemSettings GetSingleton()
         {
             var settingsList = Resources.LoadAll<JsonSaveSystemSettings>("JsonSaveSystemSettings");
             if(settingsList.Length == 0)
@@ -72,7 +73,7 @@ namespace Dman.SimpleJson
 
         private JsonSerializer CreateSerializer()
         {
-            var settings = JsonSerializerSettingFactory.GetSettings();
+            var settings = JsonSerializerSettingFactory.Create();
             return JsonSerializer.CreateDefault(settings);
         }
     }

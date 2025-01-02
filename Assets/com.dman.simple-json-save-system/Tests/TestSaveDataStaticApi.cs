@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
@@ -208,7 +209,8 @@ namespace Dman.SimpleJson.Tests
         /// </summary>
         private void SideWriteToFile(string fileContents)
         {
-            var externalPersistence = new FileSystemPersistence(SimpleSave.SaveFolderName);
+            var fullPath = Path.Combine(Application.persistentDataPath, SimpleSave.FullSaveFolderPath);
+            var externalPersistence = new FileSystemPersistence(fullPath);
             using var writer = externalPersistence.WriteTo(SimpleSave.SaveFileName);
             writer.Write(fileContents);
             writer.Close();

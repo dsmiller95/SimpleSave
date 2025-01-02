@@ -5,14 +5,16 @@ namespace Dman.SimpleJson
 {
     public static class SimpleSave
     {
+        public static string FullSaveFolderPath => JsonSaveSystemSettings.FullSaveFolderPath;
         public static string SaveFileName
         {
             get => _cachedSaveFileName ??= JsonSaveSystemSettings.DefaultSaveFileName;
             private set => _cachedSaveFileName = value;
         }
         private static string _cachedSaveFileName;
-
-        public static string SaveFolderName => JsonSaveSystemSettings.SaveFolderName;
+        
+        public static PersistSaves Saves => _saves ??= PersistSaves.CreateDisk(FullSaveFolderPath, JsonSaveSystemSettings.Serializer);
+        private static PersistSaves _saves;
         
         [NotNull]
         private static SaveData CurrentSaveData
@@ -30,9 +32,6 @@ namespace Dman.SimpleJson
             set => _currentSaveData = value;
         }
         private static SaveData _currentSaveData;
-
-        public static PersistSaves Saves => _saves ??= PersistSaves.CreateDisk(SaveFolderName, JsonSaveSystemSettings.Serializer);
-        private static PersistSaves _saves;
 
         /// <summary>
         /// Save the current file to disk.

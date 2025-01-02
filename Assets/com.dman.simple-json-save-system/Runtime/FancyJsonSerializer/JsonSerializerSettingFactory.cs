@@ -9,7 +9,7 @@ namespace Dman.SimpleJson.FancyJsonSerializer
     public static class JsonSerializerSettingFactory
     {
         [CanBeNull]
-        public static JsonSerializerSettings GetSettings()
+        public static JsonSerializerSettings Create()
         {
             return GetUnityPlusPlusSerializerSettings();
         }

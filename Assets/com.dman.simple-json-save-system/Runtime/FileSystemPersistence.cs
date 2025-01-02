@@ -41,12 +41,16 @@ namespace Dman.SimpleJson
             }
         }
 
-        // TODO: this is dangerous. what if the directory has other stuff.. like our game executables?
+        
         public void DeleteAll()
         {
             if (Directory.Exists(_directoryPath))
             {
-                Directory.Delete(_directoryPath, recursive: true);
+                var files = Directory.EnumerateFiles(_directoryPath, "*.json", SearchOption.TopDirectoryOnly);
+                foreach (var file in files)
+                {
+                    File.Delete(file);
+                }
             }
         }
 

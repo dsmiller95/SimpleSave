@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Dman.SimpleJson
 {
     /// <summary>
-    /// Wrapper to provide a simple interface for saving and loading SaveData objects.
+    /// Used to create, load, and save SaveData objects.
     /// </summary>
     public class PersistSaves
     {
@@ -20,10 +20,10 @@ namespace Dman.SimpleJson
             _serializer = serializer;
         }
         
-        public static PersistSaves CreateDisk(string rootFolder, JsonSerializer serializerOverride = null)
+        public static PersistSaves CreateDisk(string fullPath, JsonSerializer serializerOverride = null)
         {
             var serializer = serializerOverride ?? JsonSaveSystemSettings.Serializer;
-            var textPersistence = new FileSystemPersistence(rootFolder);
+            var textPersistence = new FileSystemPersistence(fullPath);
             return new PersistSaves(textPersistence, serializer);
         }
         
