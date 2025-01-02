@@ -44,7 +44,7 @@ namespace Dman.SimpleJson
         }
         private static SimpleSaveFile _currentSaveData;
 
-        private static JsonSerializer DefaultSerializer => _defaultSerializer ??= JsonSerializer.CreateDefault(GetSerializerSettings());
+        public static JsonSerializer DefaultSerializer => _defaultSerializer ??= JsonSerializer.CreateDefault(GetSerializerSettings());
         private static JsonSerializer _defaultSerializer;
 
         public static IPersistText TextPersistence => _textPersistence ??= new FileSystemPersistence(SaveFolderName);
@@ -170,30 +170,12 @@ namespace Dman.SimpleJson
         [CanBeNull]
         private static SimpleSaveFile LoadFrom(string file)
         {
-            using var reader = TextPersistence.ReadFrom(file);
-            if (reader == null) return null;
-            using var jsonReader = new JsonTextReader(reader);
-            
-            try
-            {
-                var data = JObject.Load(jsonReader);
-                return SimpleSaveFile.Loaded(data, DefaultSerializer);
-            }
-            catch (JsonException e)
-            {
-                using var reader2 = TextPersistence.ReadFrom(file);
-                Log.Error($"Failed to load data for {SaveFolderName}/{file}.json, malformed Json. Raw json: {reader2?.ReadToEnd()}");
-                Debug.LogException(e);
-                return null;
-            }
+            return TextPersistence.LoadFile(file, DefaultSerializer);
         }
         
         private static void PersistFile(SimpleSaveFile data, string file)
         {
-            using var writer = TextPersistence.WriteTo(file);
-            using var jsonWriter = new JsonTextWriter(writer);
-            DefaultSerializer.Serialize(jsonWriter, data.SavedToken);
-            TextPersistence.OnWriteComplete(file);
+            TextPersistence.PersistFile(data, file);
         }
         
         private static JsonSerializerSettings GetSerializerSettings()

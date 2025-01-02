@@ -239,7 +239,7 @@ namespace Dman.SimpleJson.Tests
             
             Assert.AreEqual("testValue1295", result);
 
-            LogAssert.Expect(LogType.Error, new Regex($@"Failed to load data for {SimpleSave.SaveFolderName}/{SimpleSave.SaveFileName}\.json, malformed Json"));
+            LogAssert.Expect(LogType.Error, new Regex($@"Failed to load data for {SimpleSave.SaveFileName}\.json, malformed Json"));
             LogAssert.Expect(LogType.Exception, new Regex(@"JsonReaderException: Invalid property identifier character: \{"));
         }
     }

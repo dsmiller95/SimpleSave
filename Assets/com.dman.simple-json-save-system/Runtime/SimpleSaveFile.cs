@@ -1,15 +1,20 @@
 using System;
 using Dman.Utilities.Logger;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace Dman.SimpleJson
 {
     public class SimpleSaveFile
     {
-        private readonly JObject _data;
         public JToken SavedToken => _data;
+        private readonly JObject _data;
+        
+        public JsonSerializer Serializer => _serializer;
         private readonly JsonSerializer _serializer;
+        
         private bool _isDisposed = false;
             
         private SimpleSaveFile(JsonSerializer serializer, JObject data = null)
@@ -86,6 +91,38 @@ namespace Dman.SimpleJson
         {
             if (_isDisposed) return;
             _isDisposed = true;
+        }
+    }
+    
+    public static class SimpleSaveFileExtensions
+    {
+        public static void PersistFile(this IPersistText textPersistence, SimpleSaveFile saveFile, string file)
+        {
+            using var writer = textPersistence.WriteTo(file);
+            using var jsonWriter = new JsonTextWriter(writer);
+            saveFile.Serializer.Serialize(jsonWriter, saveFile.SavedToken);
+            textPersistence.OnWriteComplete(file);
+        }
+        
+        [CanBeNull]
+        public static SimpleSaveFile LoadFile(this IPersistText textPersistence, string file, JsonSerializer serializer)
+        {
+            using var reader = textPersistence.ReadFrom(file);
+            if (reader == null) return null;
+            using var jsonReader = new JsonTextReader(reader);
+            
+            try
+            {
+                var data = JObject.Load(jsonReader);
+                return SimpleSaveFile.Loaded(data, serializer);
+            }
+            catch (JsonException e)
+            {
+                using var reader2 = textPersistence.ReadFrom(file);
+                Log.Error($"Failed to load data for {file}.json, malformed Json. Raw json: {reader2?.ReadToEnd()}");
+                Debug.LogException(e);
+                return null;
+            }
         }
     }
 }

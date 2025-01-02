@@ -21,14 +21,17 @@ namespace Dman.SimpleJson.Tests
             string serializedString,
             params (string key, object data)[] datas)
         {
-            var context = "ContextName1";
-            using var stringStore = StringStorePersistText.WithFiles((context, serializedString));
-            var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            saveDataContextProvider.LoadContext(context);
-            var saveDataContext = saveDataContextProvider.GetContext(context);
+            using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
+            var loadedFile = stringStore.LoadFile("tmp", SimpleSave.DefaultSerializer);
+            if (loadedFile == null)
+            {
+                Assert.Fail("Failed to load file");
+                return;
+            }
+            
             foreach (var (key, data) in datas)
             {
-                Assert.IsTrue(saveDataContext.TryLoad(key, out var actualData, data.GetType()));
+                Assert.IsTrue(loadedFile.TryLoad(key, out var actualData, data.GetType()));
             }
         }
         
@@ -36,14 +39,17 @@ namespace Dman.SimpleJson.Tests
             (string key, object data)[] datas,
             string serializedString)
         {
-            var context = "ContextName2";
-            using var stringStore = StringStorePersistText.WithFiles((context, serializedString));
-            var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            saveDataContextProvider.LoadContext(context);
-            var saveDataContext = saveDataContextProvider.GetContext(context);
+            using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
+            var loadedFile = stringStore.LoadFile("tmp", SimpleSave.DefaultSerializer);
+            if (loadedFile == null)
+            {
+                Assert.Fail("Failed to load file");
+                return;
+            }
+            
             foreach (var (key, data) in datas)
             {
-                Assert.IsTrue(saveDataContext.TryLoad(key, out var actualData, data.GetType()));
+                Assert.IsTrue(loadedFile.TryLoad(key, out var actualData, data.GetType()));
                 Assert.AreEqual(data, actualData);
             }
         }
@@ -51,37 +57,39 @@ namespace Dman.SimpleJson.Tests
         public static bool TryLoad<T>(string serializedString, string key, out T data)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            saveDataContextProvider.LoadContext("tmp");
-            var saveDataContext = saveDataContextProvider.GetContext("tmp");
-            return saveDataContext.TryLoad(key, out data);
+            var loadedFile = stringStore.LoadFile("tmp", SimpleSave.DefaultSerializer);
+            if (loadedFile == null)
+            {
+                data = default;
+                return false;
+            }
+            return loadedFile.TryLoad(key, out data);
         }
 
         public static string SerializeToString(
             bool assertInternalRoundTrip = true,
             params (string key, object data)[] datas)
         {
-            var context = "ContextName3";
-            using var stringStore = new StringStorePersistText();
-            var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            var saveDataContext = saveDataContextProvider.GetContext(context);
+            var saveData = SimpleSaveFile.Empty(SimpleSave.DefaultSerializer);
             foreach (var (key, data) in datas)
             {
-                saveDataContext.Save(key, data);
+                saveData.Save(key, data);
             }
-            saveDataContextProvider.PersistContext(context);
+            
+            using var stringStore = new StringStorePersistText();
+            stringStore.PersistFile(saveData, "tmp");
 
             if (assertInternalRoundTrip)
             {
                 // assert round-trip without re-load
                 foreach (var (key, data) in datas)
                 {
-                    Assert.IsTrue(saveDataContext.TryLoad(key, out var actualData, data.GetType()));
+                    Assert.IsTrue(saveData.TryLoad(key, out var actualData, data.GetType()));
                     Assert.AreEqual(data, actualData);
                 }
             }
                 
-            return stringStore.ReadFrom(context)!.ReadToEnd();
+            return stringStore.ReadFrom("tmp")!.ReadToEnd();
         }
 
         public static void AssertMultilineStringEqual(string expected, string actual)
