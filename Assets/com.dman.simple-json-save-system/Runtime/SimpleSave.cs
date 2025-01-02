@@ -44,6 +44,7 @@ namespace Dman.SimpleJson
         }
         private static SimpleSaveFile _currentSaveData;
 
+        // TODO: should this become part of the SimpleSaveFile?
         public static JsonSerializer DefaultSerializer => _defaultSerializer ??= JsonSerializer.CreateDefault(GetSerializerSettings());
         private static JsonSerializer _defaultSerializer;
 

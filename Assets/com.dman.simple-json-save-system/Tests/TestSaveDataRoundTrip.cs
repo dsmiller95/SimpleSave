@@ -173,14 +173,16 @@ namespace Dman.SimpleJson.Tests
             };
             
             // act
-            using var stringStore = new StringStorePersistText();
-            var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            var saveDataContext = saveDataContextProvider.GetContext("test");
-            saveDataContext.Save("dogg", savedData);
-            saveDataContextProvider.PersistContext("test");
+            var file = SimpleSaveFile.Empty(SimpleSave.DefaultSerializer);
+            file.Save("dogg", savedData);
             
-            saveDataContextProvider.LoadContext("test");
-            var didLoad = saveDataContext.TryLoad("dogg", out Cat _);
+            using var stringStore = new StringStorePersistText();
+            
+            stringStore.PersistFile(file, "test");
+            file = stringStore.LoadFile("test", SimpleSave.DefaultSerializer);
+            Assert.NotNull(file);
+            
+            var didLoad = file.TryLoad("dogg", out Cat _);
             
             // assert
             Assert.IsFalse(didLoad, "The load should fail");
@@ -299,47 +301,6 @@ namespace Dman.SimpleJson.Tests
             
             // assert
             AssertMultilineStringEqual(expectedSavedString, savedString);
-        }
-        
-        [Test]
-        public void WhenSaveContextDeleted_HandleRemainsValid()
-        {
-            // arrange
-            var savedData = new Dog
-            {
-                Name = "Fido",
-                Age = 3,
-                TaggedName = "Fido the Third"
-            };
-            var savedDataTwo = new Cat
-            {
-                Name = "Mr. green",
-                Age = 6,
-                Personality = Personality.Indifferent
-            };
-            
-            // act
-            using var stringStore = new StringStorePersistText();
-            var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            var contextOne = saveDataContextProvider.GetContext("test");
-            contextOne.Save("dogg", savedData);
-            saveDataContextProvider.PersistContext("test");
-            saveDataContextProvider.DeleteContext("test");
-            saveDataContextProvider.LoadContext("test");
-            
-            var didLoad = contextOne.TryLoad("dogg", out Dog loadedDog);
-            Assert.IsFalse(didLoad, "The original context should find the data deleted");
-
-            var contextTwo = saveDataContextProvider.GetContext("test");
-            contextTwo.Save("kitty", savedDataTwo);
-            
-            var didTwoLoad = contextTwo.TryLoad("kitty", out Cat loadedCat);
-            Assert.IsTrue(didTwoLoad, "The new context should find the freshly saved data");
-            Assert.AreEqual(savedDataTwo, loadedCat, "the new context should load the new data");
-            
-            var didOneLoad = contextOne.TryLoad("kitty", out loadedCat);
-            Assert.IsTrue(didOneLoad, "The original context should find the new data");
-            Assert.AreEqual(savedDataTwo, loadedCat, "the original context should load the new data");
         }
     }
 }

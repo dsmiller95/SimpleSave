@@ -253,14 +253,16 @@ namespace Dman.SimpleJson.Tests
             var savedData = new SerializableDog(1, "Fido the Third");
             
             // act
-            using var stringStore = new StringStorePersistText();
-            var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            var saveDataContext = saveDataContextProvider.GetContext("test");
-            saveDataContext.Save("dogg", savedData);
-            saveDataContextProvider.PersistContext("test");
+            var file = SimpleSaveFile.Empty(SimpleSave.DefaultSerializer);
+            file.Save("dogg", savedData);
             
-            saveDataContextProvider.LoadContext("test");
-            var didLoad = saveDataContext.TryLoad("dogg", out Cat _);
+            using var stringStore = new StringStorePersistText();
+            
+            stringStore.PersistFile(file, "test");
+            file = stringStore.LoadFile("test", SimpleSave.DefaultSerializer);
+            Assert.NotNull(file);
+            
+            var didLoad = file.TryLoad("dogg", out Cat _);
             
             // assert
             Assert.IsFalse(didLoad, "The load should fail");
@@ -360,13 +362,11 @@ namespace Dman.SimpleJson.Tests
             savedData.name = "can't save me";
             
             // act
-            using var stringStore = new StringStorePersistText();
-            var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            var saveDataContext = saveDataContextProvider.GetContext("test");
+            var file = SimpleSaveFile.Empty(SimpleSave.DefaultSerializer);
             
             var loadAction = new TestDelegate(() =>
             {
-                saveDataContext.Save("mono", savedData);
+                file.Save("mono", savedData);
             });
             
             // assert
