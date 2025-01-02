@@ -70,13 +70,11 @@ namespace Dman.SimpleJson.Tests
 ".Trim();
             // act
             string serializedString = SerializeToString(
-                "test",
                 assertInternalRoundTrip: false,
                 ("unityPrimitives", savedData));
             
             // assert
             AssertDeserializeWithoutError(
-                "test",
                 serializedString,
                 ("unityPrimitives", savedData));
             AssertMultilineStringEqual(expectedSavedString, serializedString);

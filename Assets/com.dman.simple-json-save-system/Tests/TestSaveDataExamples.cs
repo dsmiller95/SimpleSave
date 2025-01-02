@@ -117,7 +117,6 @@ namespace Dman.SimpleJson.Tests
 ".Trim();
             // act
             string serializedString = SerializeToString(
-                "test",
                 assertInternalRoundTrip: false,
                 ("movementStrat", savedData));
 

@@ -184,7 +184,7 @@ namespace Dman.SimpleJson.Tests
             
             // assert
             Assert.IsFalse(didLoad, "The load should fail");
-            LogAssert.Expect(LogType.Error, new Regex(@"Failed to load data of type Dman\.Foundation\.Tests\.Cat for key dogg\. Raw json"));
+            LogAssert.Expect(LogType.Error, new Regex(@$"Failed to load data of type {Namespace}\.Cat for key dogg\. Raw json"));
         }
 
         

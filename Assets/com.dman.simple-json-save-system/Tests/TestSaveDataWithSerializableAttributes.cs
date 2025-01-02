@@ -236,7 +236,7 @@ namespace Dman.SimpleJson.Tests
 }
 ".Trim();
             // act
-            var savedString = SerializeToString("test", assertInternalRoundTrip: false, ("creb", savedData));
+            var savedString = SerializeToString(assertInternalRoundTrip: false, ("creb", savedData));
             var loaded = TryLoad(savedString, "creb", out PartiallySerializableAnimal loadedData);
             
             // assert
@@ -264,7 +264,7 @@ namespace Dman.SimpleJson.Tests
             
             // assert
             Assert.IsFalse(didLoad, "The load should fail");
-            LogAssert.Expect(LogType.Error, new Regex(@"Failed to load data of type Dman\.Foundation\.Tests\.Cat for key dogg\. Raw json"));
+            LogAssert.Expect(LogType.Error, new Regex(@$"Failed to load data of type {Namespace}\.Cat for key dogg\. Raw json"));
         }
 
         

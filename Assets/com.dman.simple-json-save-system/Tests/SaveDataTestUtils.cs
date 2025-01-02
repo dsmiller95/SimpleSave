@@ -5,29 +5,27 @@ namespace Dman.SimpleJson.Tests
 {
     public class SaveDataTestUtils
     {
-        public static readonly string Namespace = "Dman.Foundation.Tests";
-        public static readonly string Assembly = "com.dman.foundation.tests";
+        public static readonly string Namespace = "Dman.SimpleJson.Tests";
+        public static readonly string Assembly = "com.dman.simple-json-save-system.tests";
         
         public static string GetSerializedToAndAssertRoundTrip(params (string key, object data)[] datas)
         {
-            var contextName = "test";
-
-            string serializedString = SerializeToString(contextName, assertInternalRoundTrip: true, datas);
+            string serializedString = SerializeToString(assertInternalRoundTrip: true, datas: datas);
             
-            AssertExternalRoundTrip(datas, contextName, serializedString);
+            AssertExternalRoundTrip(datas, serializedString);
 
             return serializedString;
         }
 
         public static void AssertDeserializeWithoutError(
-            string contextName,
             string serializedString,
             params (string key, object data)[] datas)
         {
-            using var stringStore = StringStorePersistText.WithFiles((contextName, serializedString));
+            var context = "ContextName1";
+            using var stringStore = StringStorePersistText.WithFiles((context, serializedString));
             var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            saveDataContextProvider.LoadContext(contextName);
-            var saveDataContext = saveDataContextProvider.GetContext(contextName);
+            saveDataContextProvider.LoadContext(context);
+            var saveDataContext = saveDataContextProvider.GetContext(context);
             foreach (var (key, data) in datas)
             {
                 Assert.IsTrue(saveDataContext.TryLoad(key, out var actualData, data.GetType()));
@@ -36,13 +34,13 @@ namespace Dman.SimpleJson.Tests
         
         private static void AssertExternalRoundTrip(
             (string key, object data)[] datas,
-            string contextName,
             string serializedString)
         {
-            using var stringStore = StringStorePersistText.WithFiles((contextName, serializedString));
+            var context = "ContextName2";
+            using var stringStore = StringStorePersistText.WithFiles((context, serializedString));
             var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            saveDataContextProvider.LoadContext(contextName);
-            var saveDataContext = saveDataContextProvider.GetContext(contextName);
+            saveDataContextProvider.LoadContext(context);
+            var saveDataContext = saveDataContextProvider.GetContext(context);
             foreach (var (key, data) in datas)
             {
                 Assert.IsTrue(saveDataContext.TryLoad(key, out var actualData, data.GetType()));
@@ -60,18 +58,18 @@ namespace Dman.SimpleJson.Tests
         }
 
         public static string SerializeToString(
-            string contextName,
-            bool assertInternalRoundTrip = true, 
+            bool assertInternalRoundTrip = true,
             params (string key, object data)[] datas)
         {
+            var context = "ContextName3";
             using var stringStore = new StringStorePersistText();
             var saveDataContextProvider = SaveDataContextProvider.CreateAndPersistTo(stringStore);
-            var saveDataContext = saveDataContextProvider.GetContext(contextName);
+            var saveDataContext = saveDataContextProvider.GetContext(context);
             foreach (var (key, data) in datas)
             {
                 saveDataContext.Save(key, data);
             }
-            saveDataContextProvider.PersistContext(contextName);
+            saveDataContextProvider.PersistContext(context);
 
             if (assertInternalRoundTrip)
             {
@@ -83,7 +81,7 @@ namespace Dman.SimpleJson.Tests
                 }
             }
                 
-            return stringStore.ReadFrom(contextName)!.ReadToEnd();
+            return stringStore.ReadFrom(context)!.ReadToEnd();
         }
 
         public static void AssertMultilineStringEqual(string expected, string actual)
