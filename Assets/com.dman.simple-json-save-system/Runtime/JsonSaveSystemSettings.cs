@@ -8,12 +8,6 @@ using UnityEngine;
 
 namespace Dman.SimpleJson
 {
-    public enum JsonSerializationType
-    {
-        // TODO: fully regular Unity, somehow
-        UnityPlusPlus
-    }
-    
     public class JsonSaveSystemSettings : ScriptableObject
     {
         public static JsonSaveSystemSettings Singleton => _singleton ??= GetSingleton();
@@ -21,7 +15,7 @@ namespace Dman.SimpleJson
         
         public static string SaveFolderName => Singleton.saveFolderName;
         public static string DefaultSaveFileName => Singleton.defaultSaveFileName;
-        public static JsonSerializer Serializer => _defaultSerializer ??= Singleton.GetSerializer();
+        public static JsonSerializer Serializer => _defaultSerializer ??= Singleton.CreateSerializer();
         private static JsonSerializer _defaultSerializer;
         
         [Header("All values are read on first use of save system. Changes during runtime are ignored.")]
@@ -77,44 +71,10 @@ namespace Dman.SimpleJson
             return settingsList[0];
         }
 
-        private JsonSerializer GetSerializer()
+        private JsonSerializer CreateSerializer()
         {
-            switch (serializationType)
-            {
-                case JsonSerializationType.UnityPlusPlus:
-                    return JsonSerializer.CreateDefault(GetUnityPlusPlusSerializerSettings());
-                default:
-                    return JsonSerializer.CreateDefault();
-            }
-        }
-        
-        private static JsonSerializerSettings GetUnityPlusPlusSerializerSettings()
-        {
-            return new JsonSerializerSettings
-            {
-                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                ContractResolver = new UnitySerializationCompatibleContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy
-                    {
-                        OverrideSpecifiedNames = false
-                    },
-                    IgnoreSerializableAttribute = false,
-                },
-                ReferenceLoopHandling = ReferenceLoopHandling.Error,
-                NullValueHandling = NullValueHandling.Ignore,
-                Formatting = Formatting.Indented,
-                TypeNameHandling = TypeNameHandling.Auto,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                Converters = new List<JsonConverter>
-                {
-                    new StringEnumConverter(),
-                    new Vector3IntConverter(),
-                    new Vector2IntConverter(),
-                    new UnityJsonUtilityJsonConverter(),
-                },
-                MissingMemberHandling = MissingMemberHandling.Error,
-            };
+            var settings = JsonSerializerSettingFactory.GetSettings(serializationType);
+            return JsonSerializer.CreateDefault(settings);
         }
     }
 }
