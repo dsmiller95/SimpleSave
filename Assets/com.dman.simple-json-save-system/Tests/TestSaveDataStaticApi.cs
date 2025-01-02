@@ -93,7 +93,7 @@ namespace Dman.SimpleJson.Tests
         [Test]
         public void WhenSetsInt_CanGetString()
         {
-            SimpleSave.Set("testKey", 4);
+            SimpleSave.SetInt("testKey", 4);
             
             var result = SimpleSave.GetString("testKey");
             
@@ -103,7 +103,7 @@ namespace Dman.SimpleJson.Tests
         [Test]
         public void WhenSetsString_CanGetInt()
         {
-            SimpleSave.Set("testKey", "4");
+            SimpleSave.SetString("testKey", "4");
             
             var result = SimpleSave.GetInt("testKey", 88);
             

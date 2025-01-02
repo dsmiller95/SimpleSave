@@ -116,7 +116,7 @@ namespace Dman.SimpleJson.Tests
 }}
 ".Trim();
             // act
-            string serializedString = SerializeToString(
+            string serializedString = SerializeToString(TokenMode.Newtonsoft, 
                 assertInternalRoundTrip: false,
                 ("movementStrat", savedData));
 

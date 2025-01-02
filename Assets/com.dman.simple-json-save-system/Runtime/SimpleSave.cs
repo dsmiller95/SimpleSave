@@ -1,11 +1,4 @@
-using System.Collections.Generic;
-using Dman.SimpleJson.FancyJsonSerializer;
-using Dman.Utilities.Logger;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
 namespace Dman.SimpleJson
@@ -89,14 +82,14 @@ namespace Dman.SimpleJson
         /// </summary>
         public static void ChangeSaveFileToDefault() => ChangeSaveFile(JsonSaveSystemSettings.DefaultSaveFileName);
         
-        public static string GetString(string key, string defaultValue = "") => Get(key, defaultValue);
-        public static void SetString(string key, string value) => Set(key, value);
+        public static string GetString(string key, string defaultValue = "") => Get(key, defaultValue, TokenMode.Newtonsoft);
+        public static void SetString(string key, string value) => Set(key, value, TokenMode.Newtonsoft);
 
-        public static int GetInt(string key, int defaultValue = 0) => Get(key, defaultValue);
-        public static void SetInt(string key, int value) => Set(key, value);
+        public static int GetInt(string key, int defaultValue = 0) => Get(key, defaultValue, TokenMode.Newtonsoft);
+        public static void SetInt(string key, int value) => Set(key, value, TokenMode.Newtonsoft);
         
-        public static float GetFloat(string key, float defaultValue = 0) => Get(key, defaultValue);
-        public static void SetFloat(string key, float value) => Set(key, value);
+        public static float GetFloat(string key, float defaultValue = 0) => Get(key, defaultValue, TokenMode.Newtonsoft);
+        public static void SetFloat(string key, float value) => Set(key, value, TokenMode.Newtonsoft);
         
         /// <summary>
         /// Get generic data. Supports JsonUtility style serializable types.
@@ -105,18 +98,18 @@ namespace Dman.SimpleJson
         /// Data from the shared store, or <paramref name="defaultValue"/> if the data at <paramref name="key"/>
         /// is not present or not deserializable into <typeparamref name="T"/>
         /// </returns>
-        public static T Get<T>(string key, T defaultValue = default)
+        public static T Get<T>(string key, T defaultValue = default, TokenMode mode = TokenMode.UnityJson)
         {
-            if(!CurrentSaveData.TryLoad(key, out T value)) return defaultValue;
+            if(!CurrentSaveData.TryLoad(key, out T value, mode)) return defaultValue;
 
             return value;
         }
         /// <summary>
         /// Set generic data. Supports JsonUtility style serializable types.
         /// </summary>
-        public static void Set<T>(string key, T value)
+        public static void Set<T>(string key, T value, TokenMode mode = TokenMode.UnityJson)
         {
-            CurrentSaveData.Save(key, value);
+            CurrentSaveData.Save(key, value, mode);
         }
 
         public static bool HasKey(string key)

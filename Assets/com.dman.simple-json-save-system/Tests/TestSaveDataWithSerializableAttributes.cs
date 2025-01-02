@@ -210,14 +210,14 @@ namespace Dman.SimpleJson.Tests
             var expectedSavedString = @"
 {
   ""dogg"": {
-    ""taggedName"": ""Fido the Third"",
     ""name"": ""Fido"",
-    ""age"": 3
+    ""age"": 3,
+    ""taggedName"": ""Fido the Third""
   }
 }
 ".Trim();
             // act
-            var savedString = GetSerializedToAndAssertRoundTrip(("dogg", savedData));
+            var savedString = GetSerializedToAndAssertRoundTrip(TokenMode.UnityJson, ("dogg", savedData));
             
             // assert
             AssertMultilineStringEqual(expectedSavedString, savedString);
@@ -236,8 +236,8 @@ namespace Dman.SimpleJson.Tests
 }
 ".Trim();
             // act
-            var savedString = SerializeToString(assertInternalRoundTrip: false, ("creb", savedData));
-            var loaded = TryLoad(savedString, "creb", out PartiallySerializableAnimal loadedData);
+            var savedString = SerializeToString(TokenMode.UnityJson, assertInternalRoundTrip: false, ("creb", savedData));
+            var loaded = TryLoad(savedString, "creb", out PartiallySerializableAnimal loadedData, TokenMode.UnityJson);
             
             // assert
             AssertMultilineStringEqual(expectedSavedString, savedString);
@@ -247,7 +247,7 @@ namespace Dman.SimpleJson.Tests
         }
         
         [Test]
-        public void WhenLoadsTypeDifferentSerializableType_ThanSaved_LogsError()
+        public void WhenLoadsTypeDifferentSerializableType_ThanSaved_UnityAllowsAndDefaults()
         {
             // arrange
             var savedData = new SerializableDog(1, "Fido the Third");
@@ -257,18 +257,19 @@ namespace Dman.SimpleJson.Tests
             var persistor = PersistSaves.Create(stringStore);
 
             var file = persistor.CreateEmptySave();
-            file.Save("dogg", savedData);
+            file.Save("dogg", savedData, TokenMode.UnityJson);
             
             
             persistor.PersistFile(file, "test");
             file = persistor.LoadSave("test");
             Assert.NotNull(file);
             
-            var didLoad = file.TryLoad("dogg", out Cat _);
+            var didLoad = file.TryLoad("dogg", out SerializableCat cat, TokenMode.UnityJson);
             
             // assert
-            Assert.IsFalse(didLoad, "The load should fail");
-            LogAssert.Expect(LogType.Error, new Regex(@$"Failed to load data of type {Namespace}\.Cat for key dogg\. Raw json"));
+            Assert.IsTrue(didLoad, "The load should succeed, because Unity");
+            var expectedCat = new SerializableCat(1, Personality.Friendly);
+            Assert.AreEqual(expectedCat, cat);
         }
 
         
@@ -282,14 +283,14 @@ namespace Dman.SimpleJson.Tests
             var expectedSavedString = @"
 {
   ""dogg"": {
-    ""taggedName"": ""Fido the Third"",
     ""name"": ""Fido"",
-    ""age"": 3
+    ""age"": 3,
+    ""taggedName"": ""Fido the Third""
   },
   ""kitty"": {
-    ""personality"": ""Indifferent"",
     ""name"": ""Mr. green"",
-    ""age"": 6
+    ""age"": 6,
+    ""personality"": 2
   },
   ""???"": {
     ""name"": ""Borg"",
@@ -298,7 +299,7 @@ namespace Dman.SimpleJson.Tests
 }
 ".Trim();
             // act
-            var savedString = GetSerializedToAndAssertRoundTrip(
+            var savedString = GetSerializedToAndAssertRoundTrip(TokenMode.UnityJson, 
                 ("dogg", savedDog),
                 ("kitty", savedCat),
                 ("???", savedAnimal)
@@ -310,7 +311,7 @@ namespace Dman.SimpleJson.Tests
         
         
         [Test]
-        public void WhenSavedListOfDifferentDerivedSerializableTypeDirectly_KeepsMetadata_SavesPrivateFields()
+        public void WhenSavedListOfDifferentDerivedSerializableTypeDirectly_CannotSerialize()
         {
             // arrange
             var savedData = new List<SerializableAnimal>
@@ -321,28 +322,11 @@ namespace Dman.SimpleJson.Tests
             };
             var expectedSavedString = @$"
 {{
-  ""zoo"": [
-    {{
-      ""$type"": ""{Namespace}.SerializableDog, {Assembly}"",
-      ""taggedName"": ""Fido the Third"",
-      ""name"": ""Fido"",
-      ""age"": 3
-    }},
-    {{
-      ""$type"": ""{Namespace}.SerializableCat, {Assembly}"",
-      ""personality"": ""Indifferent"",
-      ""name"": ""Mr. green"",
-      ""age"": 6
-    }},
-    {{
-      ""name"": ""Borg"",
-      ""age"": 3000
-    }}
-  ]
+  ""zoo"": {{}}
 }}
 ".Trim();
             // act
-            var savedString = GetSerializedToAndAssertRoundTrip(
+            var savedString = SerializeToString(TokenMode.UnityJson, assertInternalRoundTrip: false, 
                 ("zoo", savedData)
             );
             
@@ -355,7 +339,7 @@ namespace Dman.SimpleJson.Tests
             public string data;
         }
         [Test]
-        public void WhenSavedMonobehavior_ThrowsException()
+        public void WhenSavedMonobehavior_DoesNotThrowException_SavesData()
         {
             // arrange
             var gameObject = new GameObject();
@@ -363,16 +347,19 @@ namespace Dman.SimpleJson.Tests
             savedData.data = "hello";
             savedData.name = "can't save me";
             
-            // act
-            var file = SimpleSaveFile.Empty(JsonSaveSystemSettings.Serializer);
+            var expectedSavedString = @"
+{
+  ""mono"": {
+    ""data"": ""hello""
+  }
+}
+".Trim();
             
-            var loadAction = new TestDelegate(() =>
-            {
-                file.Save("mono", savedData);
-            });
+            // act
+            var savedString = SerializeToString(TokenMode.UnityJson, assertInternalRoundTrip: false, ("mono", savedData));
             
             // assert
-            Assert.Throws<SaveDataException>(loadAction);
+            AssertMultilineStringEqual(expectedSavedString, savedString);
         }
     }
 }

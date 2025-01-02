@@ -8,7 +8,6 @@ namespace Dman.SimpleJson.FancyJsonSerializer
 {
     public enum JsonSerializationType
     {
-        // TODO: fully regular Unity, somehow
         UnityPlusPlus
     }
     

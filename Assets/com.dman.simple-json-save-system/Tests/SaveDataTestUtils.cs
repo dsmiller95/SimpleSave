@@ -8,17 +8,18 @@ namespace Dman.SimpleJson.Tests
         public static readonly string Namespace = "Dman.SimpleJson.Tests";
         public static readonly string Assembly = "com.dman.simple-json-save-system.tests";
         
-        public static string GetSerializedToAndAssertRoundTrip(params (string key, object data)[] datas)
+        public static string GetSerializedToAndAssertRoundTrip(TokenMode tokenMode, params (string key, object data)[] datas)
         {
-            string serializedString = SerializeToString(assertInternalRoundTrip: true, datas: datas);
+            string serializedString = SerializeToString(assertInternalRoundTrip: true, datas: datas, tokenMode: tokenMode);
             
-            AssertExternalRoundTrip(datas, serializedString);
+            AssertExternalRoundTrip(datas, serializedString, tokenMode: tokenMode);
 
             return serializedString;
         }
 
         public static void AssertDeserializeWithoutError(
             string serializedString,
+            TokenMode tokenMode,
             params (string key, object data)[] datas)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
@@ -32,13 +33,14 @@ namespace Dman.SimpleJson.Tests
             
             foreach (var (key, data) in datas)
             {
-                Assert.IsTrue(loadedFile.TryLoad(key, out var actualData, data.GetType()));
+                Assert.IsTrue(loadedFile.TryLoad(key, out var actualData, data.GetType(), tokenMode));
             }
         }
         
         private static void AssertExternalRoundTrip(
             (string key, object data)[] datas,
-            string serializedString)
+            string serializedString,
+            TokenMode tokenMode)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
             var persistor = PersistSaves.Create(stringStore);
@@ -51,12 +53,12 @@ namespace Dman.SimpleJson.Tests
             
             foreach (var (key, data) in datas)
             {
-                Assert.IsTrue(loadedFile.TryLoad(key, out var actualData, data.GetType()));
+                Assert.IsTrue(loadedFile.TryLoad(key, out var actualData, data.GetType(), tokenMode));
                 Assert.AreEqual(data, actualData);
             }
         }
 
-        public static bool TryLoad<T>(string serializedString, string key, out T data)
+        public static bool TryLoad<T>(string serializedString, string key, out T data, TokenMode tokenMode)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
             var persistor = PersistSaves.Create(stringStore);
@@ -66,10 +68,11 @@ namespace Dman.SimpleJson.Tests
                 data = default;
                 return false;
             }
-            return loadedFile.TryLoad(key, out data);
+            return loadedFile.TryLoad(key, out data, tokenMode);
         }
 
         public static string SerializeToString(
+            TokenMode tokenMode,
             bool assertInternalRoundTrip = true,
             params (string key, object data)[] datas)
         {
@@ -79,7 +82,7 @@ namespace Dman.SimpleJson.Tests
             var saveData = persistor.CreateEmptySave();
             foreach (var (key, data) in datas)
             {
-                saveData.Save(key, data);
+                saveData.Save(key, data, tokenMode);
             }
             
             persistor.PersistFile(saveData, "tmp");
@@ -89,7 +92,7 @@ namespace Dman.SimpleJson.Tests
                 // assert round-trip without re-load
                 foreach (var (key, data) in datas)
                 {
-                    Assert.IsTrue(saveData.TryLoad(key, out var actualData, data.GetType()));
+                    Assert.IsTrue(saveData.TryLoad(key, out var actualData, data.GetType(), tokenMode));
                     Assert.AreEqual(data, actualData);
                 }
             }

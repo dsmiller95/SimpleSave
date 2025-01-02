@@ -7,6 +7,21 @@ using UnityEngine;
 
 namespace Dman.SimpleJson
 {
+
+    public enum TokenMode
+    {
+        /// <summary>
+        /// Use newtonsoft to serialize the object. Used for primitive types like string, int, float, etc.
+        /// </summary>
+        Newtonsoft,
+        
+        /// <summary>
+        /// Use Unity's JsonUtility to serialize the object. Useful for complex objects which comply with unity's
+        /// serialization standards.
+        /// </summary>
+        UnityJson,
+    }
+    
     /// <summary>
     /// Save data for a single file
     /// </summary>
@@ -26,11 +41,11 @@ namespace Dman.SimpleJson
         public static SimpleSaveFile Empty(JsonSerializer serializer) => new SimpleSaveFile(serializer);
         public static SimpleSaveFile Loaded(JObject data, JsonSerializer serializer) => new SimpleSaveFile(serializer, data);
             
-        public void Save<T>(string key, T value)
+        public void Save<T>(string key, T value, TokenMode mode)
         {
             try
             {
-                _data[key] = JToken.FromObject(value, _serializer);
+                _data[key] = TokenFromValue(value, mode);
             }
             catch (JsonSerializationException e)
             {
@@ -41,8 +56,22 @@ namespace Dman.SimpleJson
                 throw new SaveDataException($"Failed to save data for key {key} of type {typeof(T)}", e);
             }
         }
+        
+        private JToken TokenFromValue<T>(T value, TokenMode mode)
+        {
+            switch (mode)
+            {
+                case TokenMode.Newtonsoft:
+                    return JToken.FromObject(value, _serializer);
+                case TokenMode.UnityJson:
+                    var unityJson = JsonUtility.ToJson(value);
+                    return JToken.Parse(unityJson);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+            }
+        }
 
-        public bool TryLoad(string key, out object value, Type objectType)
+        public bool TryLoad(string key, out object value, Type objectType, TokenMode mode)
         {
             if (!_data.TryGetValue(key, out JToken existing))
             {
@@ -52,7 +81,7 @@ namespace Dman.SimpleJson
 
             try
             {
-                value = existing.ToObject(objectType, _serializer);
+                value = ValueFromToken(existing, objectType, mode);
             }
             catch (JsonException)
             {
@@ -63,9 +92,23 @@ namespace Dman.SimpleJson
             return true;
         }
         
-        public bool TryLoad<T>(string key, out T value)
+        private object ValueFromToken(JToken token, Type objectType, TokenMode mode)
         {
-            if (TryLoad(key, out var obj, typeof(T)))
+            switch (mode)
+            {
+                case TokenMode.Newtonsoft:
+                    return token.ToObject(objectType, _serializer);
+                case TokenMode.UnityJson:
+                    var unityJson = token.ToString();
+                    return JsonUtility.FromJson(unityJson, objectType);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+            }
+        }
+        
+        public bool TryLoad<T>(string key, out T value, TokenMode mode)
+        {
+            if (TryLoad(key, out var obj, typeof(T), mode))
             {
                 value = (T)obj;
                 return true;

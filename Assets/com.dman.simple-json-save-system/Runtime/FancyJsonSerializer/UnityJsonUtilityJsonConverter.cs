@@ -25,7 +25,8 @@ namespace Dman.SimpleJson.FancyJsonSerializer
                 return null;
             }
             var json = reader.Value.ToString();
-            return UnityEngine.JsonUtility.FromJson(json, objectType);
+            var result = UnityEngine.JsonUtility.FromJson(json, objectType);
+            return result;
         }
 
         public override bool CanConvert(Type objectType)

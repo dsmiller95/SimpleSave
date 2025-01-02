@@ -155,7 +155,7 @@ namespace Dman.SimpleJson.Tests
 }
 ".Trim();
             // act
-            var savedString = GetSerializedToAndAssertRoundTrip(("dogg", savedData));
+            var savedString = GetSerializedToAndAssertRoundTrip(TokenMode.Newtonsoft, ("dogg", savedData));
             
             // assert
             AssertMultilineStringEqual(expectedSavedString, savedString);
@@ -177,13 +177,13 @@ namespace Dman.SimpleJson.Tests
             var persistor = PersistSaves.Create(stringStore);
 
             var file = persistor.CreateEmptySave();
-            file.Save("dogg", savedData);
+            file.Save("dogg", savedData, TokenMode.Newtonsoft);
             
             persistor.PersistFile(file, "test");
             file = persistor.LoadSave("test");
             Assert.NotNull(file);
             
-            var didLoad = file.TryLoad("dogg", out Cat _);
+            var didLoad = file.TryLoad("dogg", out Cat _, TokenMode.Newtonsoft);
             
             // assert
             Assert.IsFalse(didLoad, "The load should fail");
@@ -231,7 +231,7 @@ namespace Dman.SimpleJson.Tests
 }
 ".Trim();
             // act
-            var savedString = GetSerializedToAndAssertRoundTrip(
+            var savedString = GetSerializedToAndAssertRoundTrip(TokenMode.Newtonsoft, 
                 ("dogg", savedDog),
                 ("kitty", savedCat),
                 ("???", savedAnimal)
@@ -296,7 +296,7 @@ namespace Dman.SimpleJson.Tests
 }}
 ".Trim();
             // act
-            var savedString = GetSerializedToAndAssertRoundTrip(
+            var savedString = GetSerializedToAndAssertRoundTrip(TokenMode.Newtonsoft, 
                 ("zoo", savedData)
             );
             

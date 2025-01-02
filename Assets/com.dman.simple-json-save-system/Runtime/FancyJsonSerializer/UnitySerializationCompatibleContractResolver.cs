@@ -27,8 +27,10 @@ namespace Dman.SimpleJson.FancyJsonSerializer
             // all we have to do is filter out the fields which are not tagged with [SerializeField] inside classes tagged with [Serializable].
             var baseMembers = base.GetSerializableMembers(objectType);
             if (this.IgnoreSerializableAttribute) return baseMembers;
+            
             var hasSerializableAttribute = objectType.GetCustomAttribute<SerializableAttribute>(inherit: false) != null;
             if (!hasSerializableAttribute) return baseMembers;
+            
             return baseMembers.Where(member =>
             {
                 if (member.MemberType == MemberTypes.Field && member is FieldInfo fieldInfo)
