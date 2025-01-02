@@ -5,7 +5,7 @@ using System.Reflection;
 using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
-namespace Dman.SimpleJson
+namespace Dman.SimpleJson.FancyJsonSerializer
 {
     public class UnitySerializationCompatibleContractResolver : DefaultContractResolver
     {

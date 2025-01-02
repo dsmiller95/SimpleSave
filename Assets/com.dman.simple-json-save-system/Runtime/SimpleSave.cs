@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Dman.SimpleJson.Converters;
+using Dman.SimpleJson.FancyJsonSerializer;
 using Dman.Utilities.Logger;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -10,14 +10,8 @@ using UnityEngine;
 
 namespace Dman.SimpleJson
 {
-    /// <summary>
-    /// simple static API into the save system, for quick and easy usage in simple use cases.
-    /// </summary>
     public static class SimpleSave
     {
-        /// <summary>
-        /// The save file name used by SimpleSave. Can be changed from the default.
-        /// </summary>
         public static string SaveFileName
         {
             get => _cachedSaveFileName ??= Settings.DefaultSaveFileName;
@@ -44,7 +38,7 @@ namespace Dman.SimpleJson
         }
         private static SimpleSaveFile _currentSaveData;
 
-        // TODO: should this become part of the SimpleSaveFile?
+        // TODO: should this become part of the SimpleSaveFile? or the SaveSystemSettings?
         public static JsonSerializer DefaultSerializer => _defaultSerializer ??= JsonSerializer.CreateDefault(GetSerializerSettings());
         private static JsonSerializer _defaultSerializer;
 
@@ -145,17 +139,6 @@ namespace Dman.SimpleJson
             TextPersistence.Delete(file);
         }
 
-        internal static void EmulateForcedQuit()
-        {
-            _currentSaveData = null;
-        }
-
-        internal static void EmulateManagedApplicationQuit()
-        {
-            Save();
-            _currentSaveData = null;
-        }
-        
         
         [RuntimeInitializeOnLoadMethod]
         private static void RunOnStart()
@@ -206,6 +189,18 @@ namespace Dman.SimpleJson
                 },
                 MissingMemberHandling = MissingMemberHandling.Error,
             };
+        }
+        
+        // below are methods for testing purposes only
+        internal static void EmulateForcedQuit()
+        {
+            _currentSaveData = null;
+        }
+
+        internal static void EmulateManagedApplicationQuit()
+        {
+            Save();
+            _currentSaveData = null;
         }
     }
 }

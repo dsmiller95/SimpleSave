@@ -6,11 +6,11 @@ using System.Text;
 namespace Dman.SimpleJson
 {
     /// <summary>
-    /// A persistence backend which just stores data in memory.
+    /// A persistence backend which just stores data in memory. Used in tests.
     /// </summary>
     public class StringStorePersistText : IPersistText, IDisposable
     {
-        private readonly Dictionary<string, MemoryStream> _store = new Dictionary<string, MemoryStream>();
+        private readonly Dictionary<string, MemoryStream> _store = new();
 
         public static StringStorePersistText WithFiles(params (string name, string contents)[] files)
         {

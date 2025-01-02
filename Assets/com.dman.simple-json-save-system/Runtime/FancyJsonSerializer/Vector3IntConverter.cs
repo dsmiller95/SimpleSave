@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Dman.SimpleJson.Converters
+namespace Dman.SimpleJson.FancyJsonSerializer
 {
     public class Vector3IntConverter : JsonConverter<Vector3Int>
     {

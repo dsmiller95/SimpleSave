@@ -15,8 +15,6 @@ namespace Dman.SimpleJson
         public JsonSerializer Serializer => _serializer;
         private readonly JsonSerializer _serializer;
         
-        private bool _isDisposed = false;
-            
         private SimpleSaveFile(JsonSerializer serializer, JObject data = null)
         {
             _serializer = serializer;
@@ -28,7 +26,6 @@ namespace Dman.SimpleJson
             
         public void Save<T>(string key, T value)
         {
-            if(_isDisposed) throw new ObjectDisposedException(nameof(SimpleSaveFile));
             try
             {
                 _data[key] = JToken.FromObject(value, _serializer);
@@ -45,7 +42,6 @@ namespace Dman.SimpleJson
 
         public bool TryLoad(string key, out object value, Type objectType)
         {
-            if(_isDisposed) throw new ObjectDisposedException(nameof(SimpleSaveFile));
             if (!_data.TryGetValue(key, out JToken existing))
             {
                 value = default;
@@ -78,19 +74,12 @@ namespace Dman.SimpleJson
 
         public bool HasKey(string key)
         {
-            if(_isDisposed) throw new ObjectDisposedException(nameof(SimpleSaveFile));
             return _data.ContainsKey(key);
         }
             
         public bool DeleteKey(string key)
         {
             return _data.Remove(key);
-        }
-            
-        public void Dispose()
-        {
-            if (_isDisposed) return;
-            _isDisposed = true;
         }
     }
     

@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Dman.SimpleJson
+namespace Dman.SimpleJson.FancyJsonSerializer
 {
     public class UnityJsonUtilityJsonConverter : JsonConverter
     {
