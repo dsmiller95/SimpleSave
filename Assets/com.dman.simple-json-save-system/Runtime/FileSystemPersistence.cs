@@ -23,11 +23,6 @@ namespace Dman.SimpleJson
             return new StreamWriter(filePath, append: false);
         }
 
-        public void OnWriteComplete(string contextKey)
-        {
-            FileSystemJslibAdapter.EnsureSynced();
-        }
-
         public TextReader ReadFrom(string contextKey)
         {
             var filePath = EnsureSaveFilePath(contextKey);

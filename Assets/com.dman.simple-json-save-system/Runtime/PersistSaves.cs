@@ -35,7 +35,6 @@ namespace Dman.SimpleJson
             using var writer = TextPersistence.WriteTo(file);
             using var jsonWriter = new JsonTextWriter(writer);
             _serializer.Serialize(jsonWriter, saveFile.SavedToken);
-            TextPersistence.OnWriteComplete(file);
         }
         
         [CanBeNull]

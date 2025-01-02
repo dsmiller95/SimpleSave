@@ -212,7 +212,6 @@ namespace Dman.SimpleJson.Tests
             using var writer = externalPersistence.WriteTo(SimpleSave.SaveFileName);
             writer.Write(fileContents);
             writer.Close();
-            externalPersistence.OnWriteComplete(SimpleSave.SaveFileName);
         }
         
         [Test]
