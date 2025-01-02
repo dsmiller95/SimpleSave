@@ -25,23 +25,23 @@ namespace Dman.SimpleJson
     /// <summary>
     /// Save data for a single file
     /// </summary>
-    public class SimpleSaveFile
+    public class SaveData
     {
         public JToken SavedToken => _data;
         private readonly JObject _data;
         
         private readonly JsonSerializer _serializer;
         
-        private SimpleSaveFile(JsonSerializer serializer, JObject data = null)
+        private SaveData(JsonSerializer serializer, JObject data = null)
         {
             _serializer = serializer;
             _data = data ?? new JObject();
         }
 
-        public static SimpleSaveFile Empty(JsonSerializer serializer) => new SimpleSaveFile(serializer);
-        public static SimpleSaveFile Loaded(JObject data, JsonSerializer serializer) => new SimpleSaveFile(serializer, data);
+        internal static SaveData Empty(JsonSerializer serializer) => new(serializer);
+        internal static SaveData Loaded(JObject data, JsonSerializer serializer) => new(serializer, data);
             
-        public void Save<T>(string key, T value, TokenMode mode)
+        public void Set<T>(string key, T value, TokenMode mode)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Dman.SimpleJson
             }
         }
 
-        public bool TryLoad(string key, out object value, Type objectType, TokenMode mode)
+        public bool TryGet(string key, out object value, Type objectType, TokenMode mode)
         {
             if (!_data.TryGetValue(key, out JToken existing))
             {
@@ -106,9 +106,9 @@ namespace Dman.SimpleJson
             }
         }
         
-        public bool TryLoad<T>(string key, out T value, TokenMode mode)
+        public bool TryGet<T>(string key, out T value, TokenMode mode)
         {
-            if (TryLoad(key, out var obj, typeof(T), mode))
+            if (TryGet(key, out var obj, typeof(T), mode))
             {
                 value = (T)obj;
                 return true;

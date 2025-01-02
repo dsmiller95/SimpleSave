@@ -6,14 +6,11 @@ namespace Dman.SimpleJson
 {
     public class FileSystemPersistence : IPersistText
     {
-        private readonly string _rootFolderPath;
         private readonly string _directoryPath;
 
         public FileSystemPersistence(string rootFolderPath)
         {
-            _rootFolderPath = rootFolderPath;
-            _directoryPath = Path.Combine(Application.persistentDataPath, _rootFolderPath);
-            
+            _directoryPath = Path.Combine(Application.persistentDataPath, rootFolderPath);
         }
         
         public TextWriter WriteTo(string contextKey)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Dman.SimpleJson
+namespace Dman.SimpleJson.FancyJsonSerializer
 {
     public class TypeSet
     {

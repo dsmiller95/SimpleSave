@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Dman.SimpleJson.FancyJsonSerializer
 {
-    // TODO: remove this?
     public class Vector2IntConverter : JsonConverter<Vector2Int>
     {
         public override void WriteJson(JsonWriter writer, Vector2Int value, JsonSerializer serializer)

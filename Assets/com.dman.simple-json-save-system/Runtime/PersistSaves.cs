@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Dman.SimpleJson
 {
+    /// <summary>
+    /// Wrapper to provide a simple interface for saving and loading SaveData objects.
+    /// </summary>
     public class PersistSaves
     {
         public readonly IPersistText TextPersistence;
@@ -30,15 +33,15 @@ namespace Dman.SimpleJson
             return new PersistSaves(textPersistence, serializer);
         }
         
-        public void PersistFile(SimpleSaveFile saveFile, string file)
+        public void PersistSave(SaveData saveData, string file)
         {
             using var writer = TextPersistence.WriteTo(file);
             using var jsonWriter = new JsonTextWriter(writer);
-            _serializer.Serialize(jsonWriter, saveFile.SavedToken);
+            _serializer.Serialize(jsonWriter, saveData.SavedToken);
         }
         
         [CanBeNull]
-        public SimpleSaveFile LoadSave(string file)
+        public SaveData LoadSave(string file)
         {
             using var reader = TextPersistence.ReadFrom(file);
             if (reader == null) return null;
@@ -47,20 +50,19 @@ namespace Dman.SimpleJson
             try
             {
                 var data = JObject.Load(jsonReader);
-                return SimpleSaveFile.Loaded(data, _serializer);
+                return SaveData.Loaded(data, _serializer);
             }
             catch (JsonException e)
             {
-                using var reader2 = TextPersistence.ReadFrom(file);
-                Log.Error($"Failed to load data for {file}.json, malformed Json. Raw json: {reader2?.ReadToEnd()}");
+                Log.Error($"Failed to load data for {file}.json, malformed Json. Raw json: {reader.ReadToEnd()}");
                 Debug.LogException(e);
                 return null;
             }
         }
 
-        public SimpleSaveFile CreateEmptySave()
+        public SaveData CreateEmptySave()
         {
-            return SimpleSaveFile.Empty(_serializer);
+            return SaveData.Empty(_serializer);
         }
     }
 }

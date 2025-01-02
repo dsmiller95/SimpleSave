@@ -6,25 +6,17 @@ using Newtonsoft.Json.Serialization;
 
 namespace Dman.SimpleJson.FancyJsonSerializer
 {
-    public enum JsonSerializationType
-    {
-        UnityPlusPlus
-    }
-    
     public static class JsonSerializerSettingFactory
     {
         [CanBeNull]
-        public static JsonSerializerSettings GetSettings(JsonSerializationType serializationType)
+        public static JsonSerializerSettings GetSettings()
         {
-            switch (serializationType)
-            {
-                case JsonSerializationType.UnityPlusPlus:
-                    return GetUnityPlusPlusSerializerSettings();
-                default:
-                    return null;
-            }
+            return GetUnityPlusPlusSerializerSettings();
         }
         
+        /// <summary>
+        /// A serialization type based on unity which attempts to handle some of the common native types. Not perfect.
+        /// </summary>
         private static JsonSerializerSettings GetUnityPlusPlusSerializerSettings()
         {
             return new JsonSerializerSettings

@@ -15,14 +15,13 @@ namespace Dman.SimpleJson
         public static string SaveFolderName => JsonSaveSystemSettings.SaveFolderName;
         
         [NotNull]
-        private static SimpleSaveFile CurrentSaveData
+        private static SaveData CurrentSaveData
         {
             get
             {
                 if (_currentSaveData == null)
                 {
-                    string file = SaveFileName;
-                    _currentSaveData = Saves.LoadSave(file);
+                    _currentSaveData = Saves.LoadSave(SaveFileName);
                     // if Load did not load any data, then create empty data
                     _currentSaveData ??= Saves.CreateEmptySave();
                 }
@@ -30,7 +29,7 @@ namespace Dman.SimpleJson
             }
             set => _currentSaveData = value;
         }
-        private static SimpleSaveFile _currentSaveData;
+        private static SaveData _currentSaveData;
 
         public static PersistSaves Saves => _saves ??= PersistSaves.CreateDisk(SaveFolderName, JsonSaveSystemSettings.Serializer);
         private static PersistSaves _saves;
@@ -40,9 +39,7 @@ namespace Dman.SimpleJson
         /// </summary>
         public static void Save()
         {
-            SimpleSaveFile data = CurrentSaveData;
-            string file = SaveFileName;
-            Saves.PersistFile(data, file);
+            Saves.PersistSave(CurrentSaveData, SaveFileName);
         }
         
         /// <summary>
@@ -100,7 +97,7 @@ namespace Dman.SimpleJson
         /// </returns>
         public static T Get<T>(string key, T defaultValue = default, TokenMode mode = TokenMode.UnityJson)
         {
-            if(!CurrentSaveData.TryLoad(key, out T value, mode)) return defaultValue;
+            if(!CurrentSaveData.TryGet(key, out T value, mode)) return defaultValue;
 
             return value;
         }
@@ -109,7 +106,7 @@ namespace Dman.SimpleJson
         /// </summary>
         public static void Set<T>(string key, T value, TokenMode mode = TokenMode.UnityJson)
         {
-            CurrentSaveData.Save(key, value, mode);
+            CurrentSaveData.Set(key, value, mode);
         }
 
         public static bool HasKey(string key)

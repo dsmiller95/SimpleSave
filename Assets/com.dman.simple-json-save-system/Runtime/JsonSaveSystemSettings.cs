@@ -10,7 +10,7 @@ namespace Dman.SimpleJson
 {
     public class JsonSaveSystemSettings : ScriptableObject
     {
-        public static JsonSaveSystemSettings Singleton => _singleton ??= GetSingleton();
+        private static JsonSaveSystemSettings Singleton => _singleton ??= GetSingleton();
         private static JsonSaveSystemSettings _singleton;
         
         public static string SaveFolderName => Singleton.saveFolderName;
@@ -21,7 +21,6 @@ namespace Dman.SimpleJson
         [Header("All values are read on first use of save system. Changes during runtime are ignored.")]
         [SerializeField] private string saveFolderName = "SaveContexts";
         [SerializeField] private string defaultSaveFileName = "root";
-        [SerializeField] private JsonSerializationType serializationType = JsonSerializationType.UnityPlusPlus;
 
         public static JsonSaveSystemSettings Create(string folder, string defaultFile)
         {
@@ -73,7 +72,7 @@ namespace Dman.SimpleJson
 
         private JsonSerializer CreateSerializer()
         {
-            var settings = JsonSerializerSettingFactory.GetSettings(serializationType);
+            var settings = JsonSerializerSettingFactory.GetSettings();
             return JsonSerializer.CreateDefault(settings);
         }
     }

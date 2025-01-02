@@ -257,14 +257,14 @@ namespace Dman.SimpleJson.Tests
             var persistor = PersistSaves.Create(stringStore);
 
             var file = persistor.CreateEmptySave();
-            file.Save("dogg", savedData, TokenMode.UnityJson);
+            file.Set("dogg", savedData, TokenMode.UnityJson);
             
             
-            persistor.PersistFile(file, "test");
+            persistor.PersistSave(file, "test");
             file = persistor.LoadSave("test");
             Assert.NotNull(file);
             
-            var didLoad = file.TryLoad("dogg", out SerializableCat cat, TokenMode.UnityJson);
+            var didLoad = file.TryGet("dogg", out SerializableCat cat, TokenMode.UnityJson);
             
             // assert
             Assert.IsTrue(didLoad, "The load should succeed, because Unity");

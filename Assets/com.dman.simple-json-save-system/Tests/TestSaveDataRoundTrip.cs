@@ -177,13 +177,13 @@ namespace Dman.SimpleJson.Tests
             var persistor = PersistSaves.Create(stringStore);
 
             var file = persistor.CreateEmptySave();
-            file.Save("dogg", savedData, TokenMode.Newtonsoft);
+            file.Set("dogg", savedData, TokenMode.Newtonsoft);
             
-            persistor.PersistFile(file, "test");
+            persistor.PersistSave(file, "test");
             file = persistor.LoadSave("test");
             Assert.NotNull(file);
             
-            var didLoad = file.TryLoad("dogg", out Cat _, TokenMode.Newtonsoft);
+            var didLoad = file.TryGet("dogg", out Cat _, TokenMode.Newtonsoft);
             
             // assert
             Assert.IsFalse(didLoad, "The load should fail");

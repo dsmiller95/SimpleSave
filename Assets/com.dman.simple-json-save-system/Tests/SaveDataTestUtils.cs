@@ -33,7 +33,7 @@ namespace Dman.SimpleJson.Tests
             
             foreach (var (key, data) in datas)
             {
-                Assert.IsTrue(loadedFile.TryLoad(key, out var actualData, data.GetType(), tokenMode));
+                Assert.IsTrue(loadedFile.TryGet(key, out var actualData, data.GetType(), tokenMode));
             }
         }
         
@@ -53,7 +53,7 @@ namespace Dman.SimpleJson.Tests
             
             foreach (var (key, data) in datas)
             {
-                Assert.IsTrue(loadedFile.TryLoad(key, out var actualData, data.GetType(), tokenMode));
+                Assert.IsTrue(loadedFile.TryGet(key, out var actualData, data.GetType(), tokenMode));
                 Assert.AreEqual(data, actualData);
             }
         }
@@ -68,7 +68,7 @@ namespace Dman.SimpleJson.Tests
                 data = default;
                 return false;
             }
-            return loadedFile.TryLoad(key, out data, tokenMode);
+            return loadedFile.TryGet(key, out data, tokenMode);
         }
 
         public static string SerializeToString(
@@ -82,17 +82,17 @@ namespace Dman.SimpleJson.Tests
             var saveData = persistor.CreateEmptySave();
             foreach (var (key, data) in datas)
             {
-                saveData.Save(key, data, tokenMode);
+                saveData.Set(key, data, tokenMode);
             }
             
-            persistor.PersistFile(saveData, "tmp");
+            persistor.PersistSave(saveData, "tmp");
 
             if (assertInternalRoundTrip)
             {
                 // assert round-trip without re-load
                 foreach (var (key, data) in datas)
                 {
-                    Assert.IsTrue(saveData.TryLoad(key, out var actualData, data.GetType(), tokenMode));
+                    Assert.IsTrue(saveData.TryGet(key, out var actualData, data.GetType(), tokenMode));
                     Assert.AreEqual(data, actualData);
                 }
             }

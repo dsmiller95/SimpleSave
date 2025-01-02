@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Dman.SimpleJson
+namespace Dman.SimpleJson.Tests
 {
     /// <summary>
     /// A persistence backend which just stores data in memory. Used in tests.
