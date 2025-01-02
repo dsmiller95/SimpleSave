@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Dman.Utilities.Logger;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     /// <summary>
     /// referenced as singleton from inside scripts which care about save data.

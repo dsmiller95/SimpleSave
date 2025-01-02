@@ -1,9 +1,9 @@
 using System;
 using NUnit.Framework;
 using UnityEngine;
-using static Dman.Foundation.Tests.SaveDataTestUtils;
+using static Dman.SimpleJson.Tests.SaveDataTestUtils;
 
-namespace Dman.Foundation.Tests
+namespace Dman.SimpleJson.Tests
 {
     [Serializable]
     public struct AllUnityPrimitives

@@ -1,4 +1,4 @@
-﻿namespace Dman.SaveSystem
+﻿namespace Dman.SimpleJson
 {
     public static class FileSystemJslibAdapter
     {

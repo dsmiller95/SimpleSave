@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Dman.SaveSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using static Dman.Foundation.Tests.SaveDataTestUtils;
+using static Dman.SimpleJson.Tests.SaveDataTestUtils;
 
-namespace Dman.Foundation.Tests
+namespace Dman.SimpleJson.Tests
 {
     public class Animal : IEquatable<Animal>
     {

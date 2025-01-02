@@ -1,10 +1,9 @@
 using System.Text.RegularExpressions;
-using Dman.SaveSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Dman.Foundation.Tests
+namespace Dman.SimpleJson.Tests
 {
     public class TestSaveDataStaticApi
     {

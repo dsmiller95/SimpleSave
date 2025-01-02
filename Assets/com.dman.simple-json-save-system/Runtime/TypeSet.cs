@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     public class TypeSet
     {

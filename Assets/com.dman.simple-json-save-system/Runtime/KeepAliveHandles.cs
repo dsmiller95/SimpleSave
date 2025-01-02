@@ -1,6 +1,6 @@
 using System;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     public interface IAmKeptAlive
     {

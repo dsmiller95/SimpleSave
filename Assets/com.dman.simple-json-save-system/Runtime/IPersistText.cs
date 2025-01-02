@@ -1,7 +1,7 @@
 using System.IO;
 using JetBrains.Annotations;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     /// <summary>
     /// Generic interface for saving and loading text

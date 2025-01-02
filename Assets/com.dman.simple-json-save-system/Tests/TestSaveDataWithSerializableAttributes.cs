@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Dman.SaveSystem;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using static Dman.Foundation.Tests.SaveDataTestUtils;
+using static Dman.SimpleJson.Tests.SaveDataTestUtils;
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
-namespace Dman.Foundation.Tests
+namespace Dman.SimpleJson.Tests
 {
     [Serializable]
     public class SerializableAnimal

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Dman.SaveSystem.Converters;
+using Dman.SimpleJson.Converters;
 using Dman.Utilities.Logger;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     /// <summary>
     /// simple static API into the save system, for quick and easy usage in simple use cases.

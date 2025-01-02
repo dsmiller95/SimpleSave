@@ -1,8 +1,7 @@
 using System;
-using UnityEditor;
 using UnityEngine;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     public static class JsonSaveSystemSingleton
     {

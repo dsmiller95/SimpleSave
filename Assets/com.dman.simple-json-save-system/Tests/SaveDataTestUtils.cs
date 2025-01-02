@@ -1,8 +1,7 @@
-﻿using Dman.SaveSystem;
-using Dman.Utilities;
+﻿using Dman.Utilities;
 using NUnit.Framework;
 
-namespace Dman.Foundation.Tests
+namespace Dman.SimpleJson.Tests
 {
     public class SaveDataTestUtils
     {

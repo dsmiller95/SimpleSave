@@ -3,7 +3,7 @@ using Dman.Utilities.Logger;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     public class SimpleSaveFile
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dman.SaveSystem.Converters;
+using Dman.SimpleJson.Converters;
 using Dman.Utilities.Logger;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     public class SaveDataContextProvider : ISaveDataContextProvider, ISaveDataPersistence, IDisposable
     {

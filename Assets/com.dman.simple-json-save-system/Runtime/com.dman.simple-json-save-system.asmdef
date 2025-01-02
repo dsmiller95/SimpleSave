@@ -1,6 +1,6 @@
 {
-    "name": "com.dman.foundation.json-save-system",
-    "rootNamespace": "Dman.SaveSystem",
+    "name": "com.dman.foundation.simple-json-save-system",
+    "rootNamespace": "Dman.SimpleJson",
     "references": [
         "GUID:59e83f50c45b3c04faa860925fdf2547"
     ],

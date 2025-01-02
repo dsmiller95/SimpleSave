@@ -2,7 +2,7 @@ using System.IO;
 using Dman.Utilities.Logger;
 using UnityEngine;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     public class FileSystemPersistence : IPersistText
     {

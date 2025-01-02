@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     public class UnityJsonUtilityJsonConverter : JsonConverter
     {

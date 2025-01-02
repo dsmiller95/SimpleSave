@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Dman.SaveSystem
+namespace Dman.SimpleJson
 {
     /// <summary>
     /// A persistence backend which just stores data in memory.
