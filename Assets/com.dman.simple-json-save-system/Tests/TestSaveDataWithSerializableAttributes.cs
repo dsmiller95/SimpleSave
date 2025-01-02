@@ -253,13 +253,15 @@ namespace Dman.SimpleJson.Tests
             var savedData = new SerializableDog(1, "Fido the Third");
             
             // act
-            var file = SimpleSaveFile.Empty(SimpleSave.DefaultSerializer);
+            using var stringStore = new StringStorePersistText();
+            var persistor = PersistSaves.Create(stringStore);
+
+            var file = persistor.CreateEmptySave();
             file.Save("dogg", savedData);
             
-            using var stringStore = new StringStorePersistText();
             
-            stringStore.PersistFile(file, "test");
-            file = stringStore.LoadFile("test", SimpleSave.DefaultSerializer);
+            persistor.PersistFile(file, "test");
+            file = persistor.LoadSave("test");
             Assert.NotNull(file);
             
             var didLoad = file.TryLoad("dogg", out Cat _);
@@ -362,7 +364,7 @@ namespace Dman.SimpleJson.Tests
             savedData.name = "can't save me";
             
             // act
-            var file = SimpleSaveFile.Empty(SimpleSave.DefaultSerializer);
+            var file = SimpleSaveFile.Empty(JsonSaveSystemSettings.Serializer);
             
             var loadAction = new TestDelegate(() =>
             {

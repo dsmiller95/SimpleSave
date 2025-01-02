@@ -22,7 +22,8 @@ namespace Dman.SimpleJson.Tests
             params (string key, object data)[] datas)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var loadedFile = stringStore.LoadFile("tmp", SimpleSave.DefaultSerializer);
+            var persistor = PersistSaves.Create(stringStore);
+            var loadedFile = persistor.LoadSave("tmp");
             if (loadedFile == null)
             {
                 Assert.Fail("Failed to load file");
@@ -40,7 +41,8 @@ namespace Dman.SimpleJson.Tests
             string serializedString)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var loadedFile = stringStore.LoadFile("tmp", SimpleSave.DefaultSerializer);
+            var persistor = PersistSaves.Create(stringStore);
+            var loadedFile = persistor.LoadSave("tmp");
             if (loadedFile == null)
             {
                 Assert.Fail("Failed to load file");
@@ -57,7 +59,8 @@ namespace Dman.SimpleJson.Tests
         public static bool TryLoad<T>(string serializedString, string key, out T data)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var loadedFile = stringStore.LoadFile("tmp", SimpleSave.DefaultSerializer);
+            var persistor = PersistSaves.Create(stringStore);
+            var loadedFile = persistor.LoadSave("tmp");
             if (loadedFile == null)
             {
                 data = default;
@@ -70,14 +73,16 @@ namespace Dman.SimpleJson.Tests
             bool assertInternalRoundTrip = true,
             params (string key, object data)[] datas)
         {
-            var saveData = SimpleSaveFile.Empty(SimpleSave.DefaultSerializer);
+            using var stringStore = new StringStorePersistText();
+            var persistor = PersistSaves.Create(stringStore);
+
+            var saveData = persistor.CreateEmptySave();
             foreach (var (key, data) in datas)
             {
                 saveData.Save(key, data);
             }
             
-            using var stringStore = new StringStorePersistText();
-            stringStore.PersistFile(saveData, "tmp");
+            persistor.PersistFile(saveData, "tmp");
 
             if (assertInternalRoundTrip)
             {

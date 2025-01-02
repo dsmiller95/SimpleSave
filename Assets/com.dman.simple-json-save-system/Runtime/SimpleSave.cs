@@ -14,12 +14,12 @@ namespace Dman.SimpleJson
     {
         public static string SaveFileName
         {
-            get => _cachedSaveFileName ??= Settings.DefaultSaveFileName;
+            get => _cachedSaveFileName ??= JsonSaveSystemSettings.DefaultSaveFileName;
             private set => _cachedSaveFileName = value;
         }
         private static string _cachedSaveFileName;
 
-        public static string SaveFolderName => Settings.SaveFolderName;
+        public static string SaveFolderName => JsonSaveSystemSettings.SaveFolderName;
         
         [NotNull]
         private static SimpleSaveFile CurrentSaveData
@@ -28,9 +28,10 @@ namespace Dman.SimpleJson
             {
                 if (_currentSaveData == null)
                 {
-                    _currentSaveData = LoadFrom(SaveFileName);
+                    string file = SaveFileName;
+                    _currentSaveData = Saves.LoadSave(file);
                     // if Load did not load any data, then create empty data
-                    _currentSaveData ??= SimpleSaveFile.Empty(DefaultSerializer);
+                    _currentSaveData ??= Saves.CreateEmptySave();
                 }
                 return _currentSaveData;
             }
@@ -38,22 +39,17 @@ namespace Dman.SimpleJson
         }
         private static SimpleSaveFile _currentSaveData;
 
-        // TODO: should this become part of the SimpleSaveFile? or the SaveSystemSettings?
-        public static JsonSerializer DefaultSerializer => _defaultSerializer ??= JsonSerializer.CreateDefault(GetSerializerSettings());
-        private static JsonSerializer _defaultSerializer;
-
-        public static IPersistText TextPersistence => _textPersistence ??= new FileSystemPersistence(SaveFolderName);
-        private static IPersistText _textPersistence;
-        
-        private static JsonSaveSystemSettings Settings => _settings ??= JsonSaveSystemSettings.GetSingleton();
-        private static JsonSaveSystemSettings _settings; 
+        public static PersistSaves Saves => _saves ??= PersistSaves.CreateDisk(SaveFolderName, JsonSaveSystemSettings.Serializer);
+        private static PersistSaves _saves;
 
         /// <summary>
         /// Save the current file to disk.
         /// </summary>
         public static void Save()
         {
-            PersistFile(CurrentSaveData, SaveFileName);
+            SimpleSaveFile data = CurrentSaveData;
+            string file = SaveFileName;
+            Saves.PersistFile(data, file);
         }
         
         /// <summary>
@@ -66,7 +62,8 @@ namespace Dman.SimpleJson
         /// </remarks>
         public static void Refresh()
         {
-            var loadedData = LoadFrom(SaveFileName);
+            string file = SaveFileName;
+            var loadedData = Saves.LoadSave(file);
             if(loadedData != null)
             {
                 CurrentSaveData = loadedData;
@@ -90,7 +87,7 @@ namespace Dman.SimpleJson
         /// <summary>
         /// Same as ChangeSaveFile, but sets to the default save file name.
         /// </summary>
-        public static void ChangeSaveFileToDefault() => ChangeSaveFile(Settings.DefaultSaveFileName);
+        public static void ChangeSaveFileToDefault() => ChangeSaveFile(JsonSaveSystemSettings.DefaultSaveFileName);
         
         public static string GetString(string key, string defaultValue = "") => Get(key, defaultValue);
         public static void SetString(string key, string value) => Set(key, value);
@@ -134,9 +131,9 @@ namespace Dman.SimpleJson
 
         public static void DeleteAll()
         {
-            CurrentSaveData = SimpleSaveFile.Empty(DefaultSerializer);
+            CurrentSaveData = Saves.CreateEmptySave();
             string file = SaveFileName;
-            TextPersistence.Delete(file);
+            Saves.TextPersistence.Delete(file);
         }
 
         
@@ -151,46 +148,6 @@ namespace Dman.SimpleJson
             Save();
         }
 
-        [CanBeNull]
-        private static SimpleSaveFile LoadFrom(string file)
-        {
-            return TextPersistence.LoadFile(file, DefaultSerializer);
-        }
-        
-        private static void PersistFile(SimpleSaveFile data, string file)
-        {
-            TextPersistence.PersistFile(data, file);
-        }
-        
-        private static JsonSerializerSettings GetSerializerSettings()
-        {
-            return new JsonSerializerSettings
-            {
-                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                ContractResolver = new UnitySerializationCompatibleContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy
-                    {
-                        OverrideSpecifiedNames = false
-                    },
-                    IgnoreSerializableAttribute = false,
-                },
-                ReferenceLoopHandling = ReferenceLoopHandling.Error,
-                NullValueHandling = NullValueHandling.Ignore,
-                Formatting = Formatting.Indented,
-                TypeNameHandling = TypeNameHandling.Auto,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                Converters = new List<JsonConverter>
-                {
-                    new StringEnumConverter(),
-                    new Vector3IntConverter(),
-                    new Vector2IntConverter(),
-                    new UnityJsonUtilityJsonConverter(),
-                },
-                MissingMemberHandling = MissingMemberHandling.Error,
-            };
-        }
-        
         // below are methods for testing purposes only
         internal static void EmulateForcedQuit()
         {

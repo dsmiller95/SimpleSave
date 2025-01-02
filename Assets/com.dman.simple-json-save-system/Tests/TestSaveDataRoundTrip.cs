@@ -173,13 +173,14 @@ namespace Dman.SimpleJson.Tests
             };
             
             // act
-            var file = SimpleSaveFile.Empty(SimpleSave.DefaultSerializer);
+            using var stringStore = new StringStorePersistText();
+            var persistor = PersistSaves.Create(stringStore);
+
+            var file = persistor.CreateEmptySave();
             file.Save("dogg", savedData);
             
-            using var stringStore = new StringStorePersistText();
-            
-            stringStore.PersistFile(file, "test");
-            file = stringStore.LoadFile("test", SimpleSave.DefaultSerializer);
+            persistor.PersistFile(file, "test");
+            file = persistor.LoadSave("test");
             Assert.NotNull(file);
             
             var didLoad = file.TryLoad("dogg", out Cat _);

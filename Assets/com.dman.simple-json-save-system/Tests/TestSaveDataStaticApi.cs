@@ -23,7 +23,7 @@ namespace Dman.SimpleJson.Tests
         [TearDown]
         public void CleanUp()
         {
-            SimpleSave.TextPersistence.DeleteAll();
+            SimpleSave.Saves.TextPersistence.DeleteAll();
             SimpleSave.DeleteAll();
         }
         
