@@ -60,11 +60,12 @@ void Run()
     var initialSomeData = new SomeData();
     initialSomeData.someString = "Hello from save";
     initialSomeData.someInt = 0;
+
     SimpleSave.Set("dataKey", initialSomeData);
     IncrementSomeDataInt("dataKey");
     IncrementSomeDataInt("dataKey");
     
-    // to apply changes to the filesystem immediately, call Save.
+    // To apply changes to the filesystem immediately, call Save.
     // Otherwise, changes will be saved on application exit.
     SimpleSave.Save();
 }
