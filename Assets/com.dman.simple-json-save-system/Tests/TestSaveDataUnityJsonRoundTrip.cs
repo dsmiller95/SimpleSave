@@ -262,14 +262,13 @@ namespace Dman.SimpleJson.Tests
             
             // act
             using var stringStore = new StringStorePersistText();
-            var persistor = PersistSaves.Create(stringStore);
 
-            var file = persistor.CreateEmptySave();
+            var file = SaveData.Empty();
             file.Set("dogg", savedData, TokenMode.SerializableObject);
             
             
-            persistor.PersistSave(file, "test");
-            file = persistor.LoadSave("test");
+            stringStore.PersistSave("test", file, JsonSaveSystemSettings.Serializer);
+            file = stringStore.LoadSave("test");
             Assert.NotNull(file);
             
             var didLoad = file.TryGet("dogg", out SerializableCat cat, TokenMode.SerializableObject);

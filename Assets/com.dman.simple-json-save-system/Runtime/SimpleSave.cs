@@ -13,8 +13,8 @@ namespace Dman.SimpleJson
         }
         private static string _cachedSaveFileName;
         
-        public static PersistSaves Saves => _saves ??= PersistSaves.CreateDisk(FullSaveFolderPath, JsonSaveSystemSettings.Serializer);
-        private static PersistSaves _saves;
+        public static IPersistText FileSystem => _fileSystem ??= FileSystemPersistence.CreateAtAbsoluteFolderPath(FullSaveFolderPath);
+        private static IPersistText _fileSystem;
         
         [NotNull]
         private static SaveData CurrentSaveData
@@ -23,9 +23,9 @@ namespace Dman.SimpleJson
             {
                 if (_currentSaveData == null)
                 {
-                    _currentSaveData = Saves.LoadSave(SaveFileName);
+                    _currentSaveData = FileSystem.LoadSave(SaveFileName);
                     // if Load did not load any data, then create empty data
-                    _currentSaveData ??= Saves.CreateEmptySave();
+                    _currentSaveData ??= SaveData.Empty();
                 }
                 return _currentSaveData;
             }
@@ -38,7 +38,7 @@ namespace Dman.SimpleJson
         /// </summary>
         public static void Save()
         {
-            Saves.PersistSave(CurrentSaveData, SaveFileName);
+            FileSystem.PersistSave(SaveFileName, CurrentSaveData, JsonSaveSystemSettings.Serializer);
         }
         
         /// <summary>
@@ -51,7 +51,7 @@ namespace Dman.SimpleJson
         /// </remarks>
         public static void Refresh()
         {
-            var loadedData = Saves.LoadSave(SaveFileName);
+            var loadedData = FileSystem.LoadSave(SaveFileName);
             if(loadedData != null)
             {
                 CurrentSaveData = loadedData;
@@ -134,8 +134,8 @@ namespace Dman.SimpleJson
 
         public static void DeleteAll()
         {
-            CurrentSaveData = Saves.CreateEmptySave();
-            Saves.TextPersistence.Delete(SaveFileName);
+            CurrentSaveData = SaveData.Empty();
+            FileSystem.Delete(SaveFileName);
         }
 
         

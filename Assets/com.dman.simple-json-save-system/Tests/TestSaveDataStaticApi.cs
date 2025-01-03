@@ -24,7 +24,7 @@ namespace Dman.SimpleJson.Tests
         [TearDown]
         public void CleanUp()
         {
-            SimpleSave.Saves.TextPersistence.DeleteAll();
+            SimpleSave.FileSystem.DeleteAll();
             SimpleSave.DeleteAll();
         }
         
@@ -210,7 +210,7 @@ namespace Dman.SimpleJson.Tests
         private void SideWriteToFile(string fileContents)
         {
             var fullPath = Path.Combine(Application.persistentDataPath, SimpleSave.FullSaveFolderPath);
-            var externalPersistence = new FileSystemPersistence(fullPath);
+            var externalPersistence = FileSystemPersistence.CreateAtAbsoluteFolderPath(fullPath);
             using var writer = externalPersistence.WriteTo(SimpleSave.SaveFileName);
             writer.Write(fileContents);
             writer.Close();

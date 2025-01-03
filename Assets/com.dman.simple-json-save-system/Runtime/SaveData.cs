@@ -29,16 +29,14 @@ namespace Dman.SimpleJson
     {
         public JToken SavedToken => _data;
         private readonly JObject _data;
-        private readonly JsonSerializer _serializer;
         
-        private SaveData(JsonSerializer serializer, JObject data)
+        private SaveData(JObject data)
         {
-            _serializer = serializer;
             _data = data;
         }
 
-        internal static SaveData Empty(JsonSerializer serializer) => new(serializer, new JObject());
-        internal static SaveData Loaded(JObject data, JsonSerializer serializer) => new(serializer, data);
+        public static SaveData Empty() => new(new JObject());
+        public static SaveData Loaded(JObject data) => new(data);
         
         public bool HasKey(string key) => _data.ContainsKey(key);
         public bool DeleteKey(string key) => _data.Remove(key);
@@ -96,7 +94,7 @@ namespace Dman.SimpleJson
             switch (mode)
             {
                 case TokenMode.Primitive:
-                    return JToken.FromObject(value, _serializer);
+                    return JToken.FromObject(value);
                 case TokenMode.SerializableObject:
                     var unityJson = JsonUtility.ToJson(value);
                     return JToken.Parse(unityJson);
@@ -110,7 +108,7 @@ namespace Dman.SimpleJson
             switch (mode)
             {
                 case TokenMode.Primitive:
-                    return token.ToObject(objectType, _serializer);
+                    return token.ToObject(objectType);
                 case TokenMode.SerializableObject:
                     var unityJson = token.ToString();
                     return JsonUtility.FromJson(unityJson, objectType);

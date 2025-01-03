@@ -8,9 +8,14 @@ namespace Dman.SimpleJson
     {
         private readonly string _directoryPath;
 
-        public FileSystemPersistence(string rootFolderPath)
+        private FileSystemPersistence(string absolutePath)
         {
-            _directoryPath = Path.Combine(Application.persistentDataPath, rootFolderPath);
+            _directoryPath = absolutePath;
+        }
+
+        public static IPersistText CreateAtAbsoluteFolderPath(string path)
+        {
+            return new FileSystemPersistence(path);
         }
         
         public TextWriter WriteTo(string contextKey)

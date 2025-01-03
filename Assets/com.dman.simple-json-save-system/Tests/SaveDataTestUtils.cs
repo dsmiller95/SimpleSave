@@ -23,8 +23,7 @@ namespace Dman.SimpleJson.Tests
             params (string key, object data)[] datas)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var persistor = PersistSaves.Create(stringStore);
-            var loadedFile = persistor.LoadSave("tmp");
+            var loadedFile = stringStore.LoadSave("tmp");
             if (loadedFile == null)
             {
                 Assert.Fail("Failed to load file");
@@ -43,8 +42,7 @@ namespace Dman.SimpleJson.Tests
             TokenMode tokenMode)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var persistor = PersistSaves.Create(stringStore);
-            var loadedFile = persistor.LoadSave("tmp");
+            var loadedFile = stringStore.LoadSave("tmp");
             if (loadedFile == null)
             {
                 Assert.Fail("Failed to load file");
@@ -61,8 +59,7 @@ namespace Dman.SimpleJson.Tests
         public static bool TryLoad<T>(string serializedString, string key, out T data, TokenMode tokenMode)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var persistor = PersistSaves.Create(stringStore);
-            var loadedFile = persistor.LoadSave("tmp");
+            var loadedFile = stringStore.LoadSave("tmp");
             if (loadedFile == null)
             {
                 data = default;
@@ -77,15 +74,14 @@ namespace Dman.SimpleJson.Tests
             params (string key, object data)[] datas)
         {
             using var stringStore = new StringStorePersistText();
-            var persistor = PersistSaves.Create(stringStore);
 
-            var saveData = persistor.CreateEmptySave();
+            var saveData = SaveData.Empty();
             foreach (var (key, data) in datas)
             {
                 saveData.Set(key, data, tokenMode);
             }
             
-            persistor.PersistSave(saveData, "tmp");
+            stringStore.PersistSave("tmp", saveData, JsonSaveSystemSettings.Serializer);
 
             if (assertInternalRoundTrip)
             {
