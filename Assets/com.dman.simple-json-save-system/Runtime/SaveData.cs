@@ -23,7 +23,7 @@ namespace Dman.SimpleJson
     }
     
     /// <summary>
-    /// Save data for a single file, loaded into memory
+    /// Save data for a single file, loaded into memory. Basically a wrapper around a JObject which represents the whole json file.
     /// </summary>
     public class SaveData
     {

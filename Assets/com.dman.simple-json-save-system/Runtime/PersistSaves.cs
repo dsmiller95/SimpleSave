@@ -15,8 +15,7 @@ namespace Dman.SimpleJson
         {
             using var writer = persistText.WriteTo(file);
             using var jsonWriter = new JsonTextWriter(writer);
-            var serializer = JsonSaveSystemSettings.Serializer;
-            serializer.Serialize(jsonWriter, saveData.SavedToken);
+            JsonSaveSystemSettings.Serializer.Serialize(jsonWriter, saveData.SavedToken);
         }
         
         [CanBeNull]

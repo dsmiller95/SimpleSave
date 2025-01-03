@@ -1,5 +1,5 @@
 using System;
-using JetBrains.Annotations;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace Dman.SimpleJson
@@ -9,37 +9,40 @@ namespace Dman.SimpleJson
         public static string FullSaveFolderPath => JsonSaveSystemSettings.FullSaveFolderPath;
         public static string SaveFileName
         {
-            get => _cachedSaveFileName ??= JsonSaveSystemSettings.DefaultSaveFileName;
-            private set => _cachedSaveFileName = value;
+            get => I.SaveFileName;
+            private set => I.SaveFileName = value;
         }
-        private static string _cachedSaveFileName;
+        public static IPersistText FileSystem => I.FileSystem;
         
-        public static IPersistText FileSystem => _fileSystem ??= FileSystemPersistence.CreateAtAbsoluteFolderPath(FullSaveFolderPath);
-        private static IPersistText _fileSystem;
+        private static SimpleSaveProperties I => _properties ??= new SimpleSaveProperties(
+            JsonSaveSystemSettings.FullSaveFolderPath, 
+            JsonSaveSystemSettings.DefaultSaveFileName);
+        private static SimpleSaveProperties _properties;
         
-        [NotNull]
-        private static SaveData CurrentSaveData
+        /// <summary>
+        /// Data class used to wrap up initialization logic for SimpleSave.
+        /// </summary>
+        [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
+        private class SimpleSaveProperties
         {
-            get
+            public string SaveFileName;
+            [JetBrains.Annotations.NotNull]
+            public SaveData CurrentSaveData;
+            public readonly IPersistText FileSystem;
+            public SimpleSaveProperties(string absoluteSaveFolderPath, string saveFileName)
             {
-                if (_currentSaveData == null)
-                {
-                    _currentSaveData = FileSystem.LoadSave(SaveFileName);
-                    // if Load did not load any data, then create empty data
-                    _currentSaveData ??= SaveData.Empty();
-                }
-                return _currentSaveData;
+                SaveFileName = saveFileName;
+                FileSystem = FileSystemPersistence.CreateAtAbsoluteFolderPath(absoluteSaveFolderPath);
+                CurrentSaveData = FileSystem.LoadSave(saveFileName) ?? SaveData.Empty();
             }
-            set => _currentSaveData = value;
         }
-        private static SaveData _currentSaveData;
 
         /// <summary>
         /// Save the current file to disk synchronously.
         /// </summary>
         public static void Save()
         {
-            FileSystem.PersistSave(SaveFileName, CurrentSaveData);
+            FileSystem.PersistSave(SaveFileName, I.CurrentSaveData);
         }
         
         /// <summary>
@@ -55,7 +58,7 @@ namespace Dman.SimpleJson
             var loadedData = FileSystem.LoadSave(SaveFileName);
             if(loadedData != null)
             {
-                CurrentSaveData = loadedData;
+                I.CurrentSaveData = loadedData;
             }
         }
         
@@ -108,7 +111,7 @@ namespace Dman.SimpleJson
         /// </returns>
         public static T Get<T>(string key, T defaultValue = default, TokenMode mode = TokenMode.SerializableObject)
         {
-            if (CurrentSaveData.TryGet(key, out T value, mode))
+            if (I.CurrentSaveData.TryGet(key, out T value, mode))
             {
                 return value;
             }
@@ -123,25 +126,24 @@ namespace Dman.SimpleJson
         /// <param name="mode">Configures how the type is converted to JSON.</param>
         public static void Set<T>(string key, T value, TokenMode mode = TokenMode.SerializableObject)
         {
-            CurrentSaveData.Set(key, value, mode);
+            I.CurrentSaveData.Set(key, value, mode);
         }
 
         public static bool HasKey(string key)
         {
-            return CurrentSaveData.HasKey(key);
+            return I.CurrentSaveData.HasKey(key);
         }
 
         public static void DeleteKey(string key)
         {
-            CurrentSaveData.DeleteKey(key);
+            I.CurrentSaveData.DeleteKey(key);
         }
 
         public static void DeleteAll()
         {
-            CurrentSaveData = SaveData.Empty();
+            I.CurrentSaveData = SaveData.Empty();
             FileSystem.Delete(SaveFileName);
         }
-
         
         [RuntimeInitializeOnLoadMethod]
         private static void RunOnStart()
@@ -157,13 +159,13 @@ namespace Dman.SimpleJson
         // below are methods for testing purposes only
         internal static void EmulateForcedQuit()
         {
-            _currentSaveData = null;
+            _properties = null;
         }
 
         internal static void EmulateManagedApplicationQuit()
         {
             Save();
-            _currentSaveData = null;
+            _properties = null;
         }
     }
 }
