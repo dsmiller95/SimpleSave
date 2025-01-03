@@ -83,26 +83,26 @@ namespace Dman.SimpleJson
         /// </remarks>
         public static void ChangeSaveFileToDefault() => ChangeSaveFile(JsonSaveSystemSettings.DefaultSaveFileName);
         
-        public static string GetString(string key, string defaultValue = "") => Get(key, defaultValue, TokenMode.Newtonsoft);
-        public static void SetString(string key, string value) => Set(key, value, TokenMode.Newtonsoft);
+        public static string GetString(string key, string defaultValue = "") => Get(key, defaultValue, TokenMode.Primitive);
+        public static void SetString(string key, string value) => Set(key, value, TokenMode.Primitive);
 
-        public static int GetInt(string key, int defaultValue = 0) => Get(key, defaultValue, TokenMode.Newtonsoft);
-        public static void SetInt(string key, int value) => Set(key, value, TokenMode.Newtonsoft);
+        public static int GetInt(string key, int defaultValue = 0) => Get(key, defaultValue, TokenMode.Primitive);
+        public static void SetInt(string key, int value) => Set(key, value, TokenMode.Primitive);
         
-        public static float GetFloat(string key, float defaultValue = 0) => Get(key, defaultValue, TokenMode.Newtonsoft);
-        public static void SetFloat(string key, float value) => Set(key, value, TokenMode.Newtonsoft);
+        public static float GetFloat(string key, float defaultValue = 0) => Get(key, defaultValue, TokenMode.Primitive);
+        public static void SetFloat(string key, float value) => Set(key, value, TokenMode.Primitive);
 
         /// <summary>
-        /// Get generic data. Supports JsonUtility style serializable types, or optionally newtonsoft style serialization.
+        /// Get generic data.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
-        /// <param name="mode">Configures how the type is converted from JSON.</param>
+        /// <param name="mode">Configures whether to use primitive or object style serialization.</param>
         /// <returns>
         /// Data from the shared store, or <paramref name="defaultValue"/> if the data at <paramref name="key"/>
         /// is not present or not deserializable into <typeparamref name="T"/>
         /// </returns>
-        public static T Get<T>(string key, T defaultValue = default, TokenMode mode = TokenMode.UnityJson)
+        public static T Get<T>(string key, T defaultValue = default, TokenMode mode = TokenMode.SerializableObject)
         {
             if (CurrentSaveData.TryGet(key, out T value, mode))
             {
@@ -117,7 +117,7 @@ namespace Dman.SimpleJson
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="mode">Configures how the type is converted to JSON.</param>
-        public static void Set<T>(string key, T value, TokenMode mode = TokenMode.UnityJson)
+        public static void Set<T>(string key, T value, TokenMode mode = TokenMode.SerializableObject)
         {
             CurrentSaveData.Set(key, value, mode);
         }

@@ -226,14 +226,14 @@ namespace Dman.SimpleJson.Tests
 }
 ".Trim();
             // act
-            string serializedString = SerializeToString(TokenMode.UnityJson, 
+            string serializedString = SerializeToString(TokenMode.SerializableObject, 
                 assertInternalRoundTrip: false,
                 ("unityPrimitives", savedData));
             
             // assert
             AssertDeserializeWithoutError( 
                 serializedString,
-                TokenMode.UnityJson,
+                TokenMode.SerializableObject,
                 ("unityPrimitives", savedData));
             AssertMultilineStringEqual(expectedSavedString, serializedString);
         }

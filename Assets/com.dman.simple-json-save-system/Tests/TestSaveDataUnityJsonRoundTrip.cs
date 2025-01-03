@@ -225,7 +225,7 @@ namespace Dman.SimpleJson.Tests
 }
 ".Trim();
             // act
-            var savedString = GetSerializedToAndAssertRoundTrip(TokenMode.UnityJson, ("dogg", savedData));
+            var savedString = GetSerializedToAndAssertRoundTrip(TokenMode.SerializableObject, ("dogg", savedData));
             
             // assert
             AssertMultilineStringEqual(expectedSavedString, savedString);
@@ -244,8 +244,8 @@ namespace Dman.SimpleJson.Tests
 }
 ".Trim();
             // act
-            var savedString = SerializeToString(TokenMode.UnityJson, assertInternalRoundTrip: false, ("creb", savedData));
-            var loaded = TryLoad(savedString, "creb", out PartiallySerializableAnimal loadedData, TokenMode.UnityJson);
+            var savedString = SerializeToString(TokenMode.SerializableObject, assertInternalRoundTrip: false, ("creb", savedData));
+            var loaded = TryLoad(savedString, "creb", out PartiallySerializableAnimal loadedData, TokenMode.SerializableObject);
             
             // assert
             AssertMultilineStringEqual(expectedSavedString, savedString);
@@ -265,14 +265,14 @@ namespace Dman.SimpleJson.Tests
             var persistor = PersistSaves.Create(stringStore);
 
             var file = persistor.CreateEmptySave();
-            file.Set("dogg", savedData, TokenMode.UnityJson);
+            file.Set("dogg", savedData, TokenMode.SerializableObject);
             
             
             persistor.PersistSave(file, "test");
             file = persistor.LoadSave("test");
             Assert.NotNull(file);
             
-            var didLoad = file.TryGet("dogg", out SerializableCat cat, TokenMode.UnityJson);
+            var didLoad = file.TryGet("dogg", out SerializableCat cat, TokenMode.SerializableObject);
             
             // assert
             Assert.IsTrue(didLoad, "The load should succeed, because Unity");
@@ -307,7 +307,7 @@ namespace Dman.SimpleJson.Tests
 }
 ".Trim();
             // act
-            var savedString = GetSerializedToAndAssertRoundTrip(TokenMode.UnityJson, 
+            var savedString = GetSerializedToAndAssertRoundTrip(TokenMode.SerializableObject, 
                 ("dogg", savedDog),
                 ("kitty", savedCat),
                 ("???", savedAnimal)
@@ -334,7 +334,7 @@ namespace Dman.SimpleJson.Tests
 }}
 ".Trim();
             // act
-            var savedString = SerializeToString(TokenMode.UnityJson, assertInternalRoundTrip: false, 
+            var savedString = SerializeToString(TokenMode.SerializableObject, assertInternalRoundTrip: false, 
                 ("zoo", savedData)
             );
             
@@ -364,7 +364,7 @@ namespace Dman.SimpleJson.Tests
 ".Trim();
             
             // act
-            var savedString = SerializeToString(TokenMode.UnityJson, assertInternalRoundTrip: false, ("mono", savedData));
+            var savedString = SerializeToString(TokenMode.SerializableObject, assertInternalRoundTrip: false, ("mono", savedData));
             
             // assert
             AssertMultilineStringEqual(expectedSavedString, savedString);

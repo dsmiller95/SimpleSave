@@ -10,16 +10,16 @@ namespace Dman.SimpleJson
     public enum TokenMode
     {
         /// <summary>
-        /// Use newtonsoft to serialize the object. Used for primitive types like string, int, float, etc.
-        /// Because JsonUtility cannot serialize a string or float alone, it must have a wrapper object.
+        /// Used for primitive types like string, int, float, Vector2, etc.
+        /// Because JsonUtility cannot serialize a string, float, or Vector2 alone we need a different serialization method.
         /// </summary>
-        Newtonsoft,
+        Primitive,
         
         /// <summary>
         /// Use Unity's JsonUtility to serialize the object. Useful for complex objects which comply with unity's
         /// serialization standards.
         /// </summary>
-        UnityJson,
+        SerializableObject,
     }
     
     /// <summary>
@@ -83,7 +83,7 @@ namespace Dman.SimpleJson
                 value = ValueFromToken(existing, objectType, mode);
                 return true;
             }
-            catch (JsonException)
+            catch (Exception e) when (e is JsonException or ArgumentException) 
             {
                 Log.Error($"Failed to load data of type {objectType} for key {key}. Raw json: {existing}");
                 value = default;
@@ -95,9 +95,9 @@ namespace Dman.SimpleJson
         {
             switch (mode)
             {
-                case TokenMode.Newtonsoft:
+                case TokenMode.Primitive:
                     return JToken.FromObject(value, _serializer);
-                case TokenMode.UnityJson:
+                case TokenMode.SerializableObject:
                     var unityJson = JsonUtility.ToJson(value);
                     return JToken.Parse(unityJson);
                 default:
@@ -109,9 +109,9 @@ namespace Dman.SimpleJson
         {
             switch (mode)
             {
-                case TokenMode.Newtonsoft:
+                case TokenMode.Primitive:
                     return token.ToObject(objectType, _serializer);
-                case TokenMode.UnityJson:
+                case TokenMode.SerializableObject:
                     var unityJson = token.ToString();
                     return JsonUtility.FromJson(unityJson, objectType);
                 default:
