@@ -34,7 +34,7 @@ namespace Dman.SimpleJson
         private static SaveData _currentSaveData;
 
         /// <summary>
-        /// Save the current file to disk.
+        /// Save the current file to disk synchronously.
         /// </summary>
         public static void Save()
         {
@@ -42,7 +42,7 @@ namespace Dman.SimpleJson
         }
         
         /// <summary>
-        /// Load the current file from disk, overwriting any unsaved changes in memory.
+        /// Load the current file from disk synchronously, overwriting any unsaved changes in memory.
         /// </summary>
         /// <remarks>
         /// Loading happens automatically on first access. ForceLoad is required when loading changes made
@@ -61,6 +61,9 @@ namespace Dman.SimpleJson
         /// <summary>
         /// Change the save file currently written to. This will save the current file before switching, if different. 
         /// </summary>
+        /// <remarks>
+        /// Causes synchronous disk access if save file is different.
+        /// </remarks>
         public static void ChangeSaveFile(string newSaveFileName)
         {
             if (newSaveFileName == SaveFileName) return;
@@ -75,6 +78,9 @@ namespace Dman.SimpleJson
         /// <summary>
         /// Same as ChangeSaveFile, but sets to the default save file name.
         /// </summary>
+        /// <remarks>
+        /// Causes synchronous disk access if save file is different.
+        /// </remarks>
         public static void ChangeSaveFileToDefault() => ChangeSaveFile(JsonSaveSystemSettings.DefaultSaveFileName);
         
         public static string GetString(string key, string defaultValue = "") => Get(key, defaultValue, TokenMode.Newtonsoft);
