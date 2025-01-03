@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace Dman.SimpleJson
 {
-
     public enum TokenMode
     {
         /// <summary>
@@ -39,7 +38,10 @@ namespace Dman.SimpleJson
 
         internal static SaveData Empty(JsonSerializer serializer) => new(serializer, new JObject());
         internal static SaveData Loaded(JObject data, JsonSerializer serializer) => new(serializer, data);
-            
+        
+        public bool HasKey(string key) => _data.ContainsKey(key);
+        public bool DeleteKey(string key) => _data.Remove(key);
+
         public void Set<T>(string key, T value, TokenMode mode)
         {
             try
@@ -53,20 +55,6 @@ namespace Dman.SimpleJson
             catch (InvalidOperationException e)
             {
                 throw new SaveDataException($"Failed to save data for key {key} of type {typeof(T)}", e);
-            }
-        }
-        
-        private JToken TokenFromValue<T>(T value, TokenMode mode)
-        {
-            switch (mode)
-            {
-                case TokenMode.Newtonsoft:
-                    return JToken.FromObject(value, _serializer);
-                case TokenMode.UnityJson:
-                    var unityJson = JsonUtility.ToJson(value);
-                    return JToken.Parse(unityJson);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
         }
 
@@ -102,6 +90,20 @@ namespace Dman.SimpleJson
             return true;
         }
         
+        private JToken TokenFromValue<T>(T value, TokenMode mode)
+        {
+            switch (mode)
+            {
+                case TokenMode.Newtonsoft:
+                    return JToken.FromObject(value, _serializer);
+                case TokenMode.UnityJson:
+                    var unityJson = JsonUtility.ToJson(value);
+                    return JToken.Parse(unityJson);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+            }
+        }
+        
         private object ValueFromToken(JToken token, Type objectType, TokenMode mode)
         {
             switch (mode)
@@ -114,16 +116,6 @@ namespace Dman.SimpleJson
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
-        }
-
-        public bool HasKey(string key)
-        {
-            return _data.ContainsKey(key);
-        }
-            
-        public bool DeleteKey(string key)
-        {
-            return _data.Remove(key);
         }
     }
 }
