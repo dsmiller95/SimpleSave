@@ -267,7 +267,7 @@ namespace Dman.SimpleJson.Tests
             file.Set("dogg", savedData, TokenMode.SerializableObject);
             
             
-            stringStore.PersistSave("test", file, JsonSaveSystemSettings.Serializer);
+            stringStore.PersistSave("test", file);
             file = stringStore.LoadSave("test");
             Assert.NotNull(file);
             

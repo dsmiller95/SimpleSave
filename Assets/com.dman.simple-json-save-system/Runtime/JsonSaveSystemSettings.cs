@@ -15,8 +15,8 @@ namespace Dman.SimpleJson
         public static string DefaultSaveFileName => Singleton.defaultSaveFileName;
         
         [Header("All values are read on first use of save system. Changes during runtime are ignored.")]
-        [SerializeField] private string saveFolderName = "SaveContexts";
-        [SerializeField] private string defaultSaveFileName = "root";
+        [SerializeField] protected string saveFolderName = "SaveContexts";
+        [SerializeField] protected string defaultSaveFileName = "root";
         
         public static JsonSerializer Serializer => _defaultSerializer ??= Singleton.CreateSerializer();
         private static JsonSerializer _defaultSerializer;
@@ -71,7 +71,7 @@ namespace Dman.SimpleJson
             return settingsList[0];
         }
 
-        private JsonSerializer CreateSerializer()
+        protected virtual JsonSerializer CreateSerializer()
         {
             var settings = JsonSerializerSettingFactory.Create();
             return JsonSerializer.CreateDefault(settings);

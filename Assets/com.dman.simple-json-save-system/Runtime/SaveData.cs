@@ -94,7 +94,7 @@ namespace Dman.SimpleJson
             switch (mode)
             {
                 case TokenMode.Primitive:
-                    return JToken.FromObject(value);
+                    return JToken.FromObject(value, JsonSaveSystemSettings.Serializer);
                 case TokenMode.SerializableObject:
                     var unityJson = JsonUtility.ToJson(value);
                     return JToken.Parse(unityJson);
@@ -108,7 +108,7 @@ namespace Dman.SimpleJson
             switch (mode)
             {
                 case TokenMode.Primitive:
-                    return token.ToObject(objectType);
+                    return token.ToObject(objectType, JsonSaveSystemSettings.Serializer);
                 case TokenMode.SerializableObject:
                     var unityJson = token.ToString();
                     return JsonUtility.FromJson(unityJson, objectType);

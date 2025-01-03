@@ -90,6 +90,46 @@ namespace Dman.SimpleJson.Tests
             Assert.AreEqual("", result);
             LogAssert.Expect(LogType.Error, new Regex("Failed to load data of type System.String for key testKey. Raw json"));
         }
+
+        private enum CustomEnumA
+        {
+            None = 0,
+            Value1,
+            Value4,
+        }
+
+        private enum CustomEnumB
+        {
+            None = 0,
+            Value2,
+            Value3,
+        }
+
+        [Test]
+        public void WhenSetsEnum_CanGetEnum_OrString()
+        {
+            SimpleSave.SetEnum("testKey", CustomEnumA.Value4);
+            
+            var result = SimpleSave.GetEnum<CustomEnumA>("testKey");
+            var resultStr = SimpleSave.GetString("testKey");
+            
+            Assert.AreEqual(CustomEnumA.Value4, result);
+            Assert.AreEqual("Value4", resultStr);
+        }
+        
+        
+        [Test]
+        public void WhenSetsEnum_CannotGetDifferentEnum()
+        {
+            SimpleSave.SetEnum("testKey", CustomEnumA.Value4);
+            
+            var result = SimpleSave.GetEnum("testKey", defaultValue: CustomEnumB.None);
+            
+            Assert.AreEqual(CustomEnumB.None, result);
+            
+            LogAssert.Expect(LogType.Error, new Regex("Failed to load data of type [^ ]+CustomEnumB for key testKey. Raw json: Value4"));
+        }
+        
         
         [Test]
         public void WhenSetsInt_CanGetString()
@@ -209,7 +249,7 @@ namespace Dman.SimpleJson.Tests
         /// </summary>
         private void SideWriteToFile(string fileContents)
         {
-            var fullPath = Path.Combine(Application.persistentDataPath, SimpleSave.FullSaveFolderPath);
+            var fullPath = SimpleSave.FullSaveFolderPath;
             var externalPersistence = FileSystemPersistence.CreateAtAbsoluteFolderPath(fullPath);
             using var writer = externalPersistence.WriteTo(SimpleSave.SaveFileName);
             writer.Write(fileContents);

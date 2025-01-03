@@ -81,7 +81,7 @@ namespace Dman.SimpleJson.Tests
                 saveData.Set(key, data, tokenMode);
             }
             
-            stringStore.PersistSave("tmp", saveData, JsonSaveSystemSettings.Serializer);
+            stringStore.PersistSave("tmp", saveData);
 
             if (assertInternalRoundTrip)
             {

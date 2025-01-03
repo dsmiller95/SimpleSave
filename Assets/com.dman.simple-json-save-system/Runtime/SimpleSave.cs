@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace Dman.SimpleJson
         /// </summary>
         public static void Save()
         {
-            FileSystem.PersistSave(SaveFileName, CurrentSaveData, JsonSaveSystemSettings.Serializer);
+            FileSystem.PersistSave(SaveFileName, CurrentSaveData);
         }
         
         /// <summary>
@@ -91,7 +92,10 @@ namespace Dman.SimpleJson
         
         public static float GetFloat(string key, float defaultValue = 0) => Get(key, defaultValue, TokenMode.Primitive);
         public static void SetFloat(string key, float value) => Set(key, value, TokenMode.Primitive);
-
+        
+        public static T GetEnum<T>(string key, T defaultValue = default) where T : Enum => Get(key, defaultValue, TokenMode.Primitive);
+        public static void SetEnum<T>(string key, T value) where T : Enum => Set(key, value, TokenMode.Primitive);
+        
         /// <summary>
         /// Get generic data.
         /// </summary>

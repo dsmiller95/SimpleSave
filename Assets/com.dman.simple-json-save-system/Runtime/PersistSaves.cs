@@ -11,10 +11,11 @@ namespace Dman.SimpleJson
     /// </summary>
     public static class PersistSavesExtensions
     { 
-        public static void PersistSave(this IPersistText persistText, string file, SaveData saveData, JsonSerializer serializer)
+        public static void PersistSave(this IPersistText persistText, string file, SaveData saveData)
         {
             using var writer = persistText.WriteTo(file);
             using var jsonWriter = new JsonTextWriter(writer);
+            var serializer = JsonSaveSystemSettings.Serializer;
             serializer.Serialize(jsonWriter, saveData.SavedToken);
         }
         
