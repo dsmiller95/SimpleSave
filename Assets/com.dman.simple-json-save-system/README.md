@@ -30,20 +30,20 @@ void Increment(string key)
 }
 
 [Serializable]
-private struct SomeData
+struct SomeData
 {
     public int someInt;
     public string someString;
 }
 
-private void IncrementSomeDataInt(string atKey)
+void IncrementSomeDataInt(string atKey)
 {
     var existing = SimpleSave.Get<SomeData>(atKey, defaultValue: new SomeData());
     existing.someInt++;
     SimpleSave.Set(atKey, existing);
 }
 
-private void Run()
+void Run()
 {
     // refresh is used to account for changes made outside of the current application
     SimpleSave.Refresh();
