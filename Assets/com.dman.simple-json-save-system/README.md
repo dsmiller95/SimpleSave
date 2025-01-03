@@ -1,7 +1,6 @@
-# Player prefs inspired save system
+# Player prefs inspired json save system
 
-Save data is organized into contexts, which are keyed by strings. This allows for saving and
-loading into save slots, or saving and loading a "root" context.
+A way to save data to a json file in a way which resembles the Unity PlayerPrefs API. Also supports unity json serializable types.
 
 ## Installation
 
@@ -74,7 +73,7 @@ void Run()
 By default, json will be saved to `{Application.persistentDataPath}/SaveContexts/Root.json` in the following format.
 To configure the save location, create a save settings asset under the menu option SaveSystem/JsonSaveSystemSettings.
 
-After invoking Run this is the contents of the save file:
+After invoking Run these are the contents of the save file:
 
 ```json
 {
