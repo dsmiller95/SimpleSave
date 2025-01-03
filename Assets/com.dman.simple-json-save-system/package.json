@@ -11,5 +11,12 @@
   "author": {
     "name": "Dan Miller",
     "email": "dsmiller95@gmail.com"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Simple Save OnGUI",
+      "description": "A simple example of how to use the save system, demonstrated with an Immediate-mode GUI interface.",
+      "path": "Samples~/SampleOnGui"
+    }
+  ]
 }
