@@ -51,8 +51,7 @@ namespace Dman.SimpleJson
         /// </remarks>
         public static void Refresh()
         {
-            string file = SaveFileName;
-            var loadedData = Saves.LoadSave(file);
+            var loadedData = Saves.LoadSave(SaveFileName);
             if(loadedData != null)
             {
                 CurrentSaveData = loadedData;
@@ -86,23 +85,32 @@ namespace Dman.SimpleJson
         
         public static float GetFloat(string key, float defaultValue = 0) => Get(key, defaultValue, TokenMode.Newtonsoft);
         public static void SetFloat(string key, float value) => Set(key, value, TokenMode.Newtonsoft);
-        
+
         /// <summary>
-        /// Get generic data. Supports JsonUtility style serializable types.
+        /// Get generic data. Supports JsonUtility style serializable types, or optionally newtonsoft style serialization.
         /// </summary>
+        /// <param name="key"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="mode">Configures how the type is converted from JSON.</param>
         /// <returns>
         /// Data from the shared store, or <paramref name="defaultValue"/> if the data at <paramref name="key"/>
         /// is not present or not deserializable into <typeparamref name="T"/>
         /// </returns>
         public static T Get<T>(string key, T defaultValue = default, TokenMode mode = TokenMode.UnityJson)
         {
-            if(!CurrentSaveData.TryGet(key, out T value, mode)) return defaultValue;
-
-            return value;
+            if (CurrentSaveData.TryGet(key, out T value, mode))
+            {
+                return value;
+            }
+            
+            return defaultValue;
         }
         /// <summary>
         /// Set generic data. Supports JsonUtility style serializable types.
         /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="mode">Configures how the type is converted to JSON.</param>
         public static void Set<T>(string key, T value, TokenMode mode = TokenMode.UnityJson)
         {
             CurrentSaveData.Set(key, value, mode);
@@ -121,8 +129,7 @@ namespace Dman.SimpleJson
         public static void DeleteAll()
         {
             CurrentSaveData = Saves.CreateEmptySave();
-            string file = SaveFileName;
-            Saves.TextPersistence.Delete(file);
+            Saves.TextPersistence.Delete(SaveFileName);
         }
 
         

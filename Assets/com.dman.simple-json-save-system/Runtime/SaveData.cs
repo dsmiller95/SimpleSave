@@ -11,6 +11,7 @@ namespace Dman.SimpleJson
     {
         /// <summary>
         /// Use newtonsoft to serialize the object. Used for primitive types like string, int, float, etc.
+        /// Because JsonUtility cannot serialize a string or float alone, it must have a wrapper object.
         /// </summary>
         Newtonsoft,
         
@@ -22,7 +23,7 @@ namespace Dman.SimpleJson
     }
     
     /// <summary>
-    /// Save data for a single file
+    /// Save data for a single file, loaded into memory
     /// </summary>
     public class SaveData
     {
@@ -80,6 +81,7 @@ namespace Dman.SimpleJson
             try
             {
                 value = ValueFromToken(existing, objectType, mode);
+                return true;
             }
             catch (JsonException)
             {
@@ -87,7 +89,6 @@ namespace Dman.SimpleJson
                 value = default;
                 return false;
             }
-            return true;
         }
         
         private JToken TokenFromValue<T>(T value, TokenMode mode)
