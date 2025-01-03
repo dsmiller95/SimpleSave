@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
@@ -105,6 +106,13 @@ namespace Dman.SimpleJson.Tests
 
     }
 
+    [TypeConverter(typeof(EnumConverter))]
+    public enum Personality
+    {
+        Friendly,
+        Aggressive,
+        Indifferent
+    }
     [Serializable]
     public class SerializableCat : SerializableAnimal
     {
