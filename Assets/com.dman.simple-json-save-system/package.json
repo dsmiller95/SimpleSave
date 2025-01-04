@@ -5,7 +5,7 @@
   "description": "A simple save system that attempts to look a lot like the PlayerPrefs API, but saves data into a json file.",
   "unity": "2020.1",
   "dependencies": {
-    "com.dman.utilities": "https://github.com/dsmiller95/DmanUtilities.git?path=Assets/UtilityScripts/com.dman.utilities#com.dman.utilities/0.8.0",
+    "com.dman.utilities": "0.7.0",
     "com.unity.nuget.newtonsoft-json": "3.0.2"
   },
   "author": {
@@ -17,6 +17,16 @@
       "displayName": "Simple Save OnGUI",
       "description": "A simple example of how to use the save system, demonstrated with an Immediate-mode GUI interface.",
       "path": "Samples~/SampleOnGui"
+    }
+  ],
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.cysharp.unitask",
+        "com.dman.utilities"
+      ]
     }
   ]
 }
