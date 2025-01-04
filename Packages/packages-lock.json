@@ -1,20 +1,11 @@
 {
   "dependencies": {
-    "com.cysharp.unitask": {
-      "version": "2.3.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://package.openupm.com"
-    },
     "com.dman.utilities": {
-      "version": "0.7.0",
+      "version": "https://github.com/dsmiller95/DmanUtilities.git?path=Assets/UtilityScripts/com.dman.utilities#com.dman.utilities/0.8.0",
       "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.cysharp.unitask": "2.3.1"
-      },
-      "url": "https://package.openupm.com"
+      "source": "git",
+      "dependencies": {},
+      "hash": "0bb97132b34df34e3fac257c8e5c78d558c02861"
     },
     "com.unity.2d.animation": {
       "version": "10.1.4",
