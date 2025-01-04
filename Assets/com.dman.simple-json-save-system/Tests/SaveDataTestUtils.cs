@@ -23,7 +23,7 @@ namespace Dman.SimpleJson.Tests
             params (string key, object data)[] datas)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var loadedFile = stringStore.LoadSave("tmp");
+            var loadedFile = stringStore.LoadSaveFrom("tmp");
             if (loadedFile == null)
             {
                 Assert.Fail("Failed to load file");
@@ -42,7 +42,7 @@ namespace Dman.SimpleJson.Tests
             TokenMode tokenMode)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var loadedFile = stringStore.LoadSave("tmp");
+            var loadedFile = stringStore.LoadSaveFrom("tmp");
             if (loadedFile == null)
             {
                 Assert.Fail("Failed to load file");
@@ -59,7 +59,7 @@ namespace Dman.SimpleJson.Tests
         public static bool TryLoad<T>(string serializedString, string key, out T data, TokenMode tokenMode)
         {
             using var stringStore = StringStorePersistText.WithFiles(("tmp", serializedString));
-            var loadedFile = stringStore.LoadSave("tmp");
+            var loadedFile = stringStore.LoadSaveFrom("tmp");
             if (loadedFile == null)
             {
                 data = default;
@@ -81,7 +81,7 @@ namespace Dman.SimpleJson.Tests
                 saveData.Set(key, data, tokenMode);
             }
             
-            stringStore.PersistSave("tmp", saveData);
+            stringStore.PersistSaveTo("tmp", saveData);
 
             if (assertInternalRoundTrip)
             {

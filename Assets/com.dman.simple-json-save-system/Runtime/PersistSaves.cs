@@ -11,7 +11,7 @@ namespace Dman.SimpleJson
     /// </summary>
     public static class PersistSavesExtensions
     { 
-        public static void PersistSave(this IPersistText persistText, string file, SaveData saveData)
+        public static void PersistSaveTo(this IPersistText persistText, string file, SaveData saveData)
         {
             using var writer = persistText.WriteTo(file);
             using var jsonWriter = new JsonTextWriter(writer);
@@ -19,7 +19,7 @@ namespace Dman.SimpleJson
         }
         
         [CanBeNull]
-        public static SaveData LoadSave(this IPersistText persistText, string file)
+        public static SaveData LoadSaveFrom(this IPersistText persistText, string file)
         {
             using var reader = persistText.ReadFrom(file);
             if (reader == null) return null;

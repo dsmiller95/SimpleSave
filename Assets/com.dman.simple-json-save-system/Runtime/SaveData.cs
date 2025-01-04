@@ -10,8 +10,8 @@ namespace Dman.SimpleJson
     public enum TokenMode
     {
         /// <summary>
-        /// Used for primitive types like string, int, float, Vector2, etc.
-        /// Because JsonUtility cannot serialize a string, float, or Vector2 alone we need a different serialization method.
+        /// Used for primitive types like string, int, float, etc.
+        /// Because JsonUtility cannot serialize a string or float alone we need a different serialization method.
         /// </summary>
         Primitive,
         

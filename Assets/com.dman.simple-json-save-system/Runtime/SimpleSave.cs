@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace Dman.SimpleJson
@@ -7,77 +6,50 @@ namespace Dman.SimpleJson
     public static class SimpleSave
     {
         public static string FullSaveFolderPath => JsonSaveSystemSettings.FullSaveFolderPath;
-        public static string SaveFileName
-        {
-            get => I.SaveFileName;
-            private set => I.SaveFileName = value;
-        }
-        public static IPersistText FileSystem => I.FileSystem;
+        public static string SaveFileName => Instance.SaveFileName;
+        public static IPersistText FileSystem => Instance.FileSystem;
         
-        private static SimpleSaveProperties I => _properties ??= new SimpleSaveProperties(
-            JsonSaveSystemSettings.FullSaveFolderPath, 
-            JsonSaveSystemSettings.DefaultSaveFileName);
-        private static SimpleSaveProperties _properties;
-        
-        /// <summary>
-        /// Data class used to wrap up initialization logic for SimpleSave.
-        /// </summary>
-        [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]
-        private class SimpleSaveProperties
+        private static SimpleSaveObject Instance
         {
-            public string SaveFileName;
-            [JetBrains.Annotations.NotNull]
-            public SaveData CurrentSaveData;
-            public readonly IPersistText FileSystem;
-            public SimpleSaveProperties(string absoluteSaveFolderPath, string saveFileName)
+            get
             {
-                SaveFileName = saveFileName;
-                FileSystem = FileSystemPersistence.CreateAtAbsoluteFolderPath(absoluteSaveFolderPath);
-                CurrentSaveData = FileSystem.LoadSave(saveFileName) ?? SaveData.Empty();
+                if (_instance == null)
+                {
+                    _instance = new SimpleSaveObject(
+                        JsonSaveSystemSettings.FullSaveFolderPath,
+                        JsonSaveSystemSettings.DefaultSaveFileName);
+                }
+
+                return _instance;
             }
         }
 
-        /// <summary>
-        /// Save the current file to disk synchronously.
-        /// </summary>
-        public static void Save()
-        {
-            FileSystem.PersistSave(SaveFileName, I.CurrentSaveData);
-        }
+        private static SimpleSaveObject _instance;
+
+        #region Static Redirect methods
         
-        /// <summary>
-        /// Load the current file from disk synchronously, overwriting any unsaved changes in memory.
-        /// </summary>
-        /// <remarks>
-        /// Loading happens automatically on first access. ForceLoad is required when loading changes made
-        /// to the file outside the SaveSystem apis during runtime. For example, edits in a text editor
-        /// or modifications made by other applications.
-        /// </remarks>
-        public static void Refresh()
-        {
-            var loadedData = FileSystem.LoadSave(SaveFileName);
-            if(loadedData != null)
-            {
-                I.CurrentSaveData = loadedData;
-            }
-        }
+        /// <inheritdoc cref="SimpleSaveObject.Save"/> 
+        public static void Save() => Instance.Save();
+
+        /// <inheritdoc cref="SimpleSaveObject.Refresh"/> 
+        public static void Refresh() => Instance.Refresh();
+
+        /// <inheritdoc cref="SimpleSaveObject.ChangeSaveFile"/> 
+        public static void ChangeSaveFile(string newSaveFileName) => Instance.ChangeSaveFile(newSaveFileName);
         
-        /// <summary>
-        /// Change the save file currently written to. This will save the current file before switching, if different. 
-        /// </summary>
-        /// <remarks>
-        /// Causes synchronous disk access if save file is different.
-        /// </remarks>
-        public static void ChangeSaveFile(string newSaveFileName)
-        {
-            if (newSaveFileName == SaveFileName) return;
-            
-            // save the old file before switching
-            Save();
-            SaveFileName = newSaveFileName;
-            // load the new save file after switching
-            Refresh();
-        }
+        /// <inheritdoc cref="SimpleSaveObject.Get{T}"/> 
+        public static T Get<T>(string key, T defaultValue = default, TokenMode mode = TokenMode.SerializableObject) 
+            => Instance.Get(key, defaultValue, mode);
+        
+        /// <inheritdoc cref="SimpleSaveObject.Set{T}"/> 
+        public static void Set<T>(string key, T value, TokenMode mode = TokenMode.SerializableObject) 
+            => Instance.Set(key, value, mode);
+
+        public static bool HasKey(string key) => Instance.HasKey(key);
+        public static void DeleteKey(string key) => Instance.DeleteKey(key);
+        public static void DeleteAll() => Instance.DeleteAll();
+        
+        #endregion
         
         /// <summary>
         /// Same as ChangeSaveFile, but sets to the default save file name.
@@ -98,52 +70,7 @@ namespace Dman.SimpleJson
         
         public static T GetEnum<T>(string key, T defaultValue = default) where T : Enum => Get(key, defaultValue, TokenMode.Primitive);
         public static void SetEnum<T>(string key, T value) where T : Enum => Set(key, value, TokenMode.Primitive);
-        
-        /// <summary>
-        /// Get generic data.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="defaultValue"></param>
-        /// <param name="mode">Configures whether to use primitive or object style serialization.</param>
-        /// <returns>
-        /// Data from the shared store, or <paramref name="defaultValue"/> if the data at <paramref name="key"/>
-        /// is not present or not deserializable into <typeparamref name="T"/>
-        /// </returns>
-        public static T Get<T>(string key, T defaultValue = default, TokenMode mode = TokenMode.SerializableObject)
-        {
-            if (I.CurrentSaveData.TryGet(key, out T value, mode))
-            {
-                return value;
-            }
-            
-            return defaultValue;
-        }
-        /// <summary>
-        /// Set generic data. Supports JsonUtility style serializable types.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="mode">Configures how the type is converted to JSON.</param>
-        public static void Set<T>(string key, T value, TokenMode mode = TokenMode.SerializableObject)
-        {
-            I.CurrentSaveData.Set(key, value, mode);
-        }
 
-        public static bool HasKey(string key)
-        {
-            return I.CurrentSaveData.HasKey(key);
-        }
-
-        public static void DeleteKey(string key)
-        {
-            I.CurrentSaveData.DeleteKey(key);
-        }
-
-        public static void DeleteAll()
-        {
-            I.CurrentSaveData = SaveData.Empty();
-            FileSystem.Delete(SaveFileName);
-        }
         
         [RuntimeInitializeOnLoadMethod]
         private static void RunOnStart()
@@ -159,13 +86,13 @@ namespace Dman.SimpleJson
         // below are methods for testing purposes only
         internal static void EmulateForcedQuit()
         {
-            _properties = null;
+            _instance = null;
         }
 
         internal static void EmulateManagedApplicationQuit()
         {
             Save();
-            _properties = null;
+            _instance = null;
         }
     }
 }
