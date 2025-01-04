@@ -5,7 +5,6 @@
   "description": "A simple save system that attempts to look a lot like the PlayerPrefs API, but saves data into a json file.",
   "unity": "2020.1",
   "dependencies": {
-    "com.dman.utilities": "0.7.0",
     "com.unity.nuget.newtonsoft-json": "3.0.2"
   },
   "author": {

@@ -1,4 +1,4 @@
-using Dman.Utilities.Logger;
+
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,7 +32,7 @@ namespace Dman.SimpleJson
             }
             catch (JsonException e)
             {
-                Log.Error($"Failed to load data for {file}.json, malformed Json. Raw json: {reader.ReadToEnd()}");
+                Debug.LogError($"Failed to load data for {file}.json, malformed Json. Raw json: {reader.ReadToEnd()}");
                 Debug.LogException(e);
                 return null;
             }

@@ -1,4 +1,5 @@
-﻿using Dman.Utilities;
+﻿
+using Dman.Utilities;
 using NUnit.Framework;
 
 namespace Dman.SimpleJson.Tests

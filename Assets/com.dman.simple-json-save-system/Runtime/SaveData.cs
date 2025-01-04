@@ -1,5 +1,5 @@
 using System;
-using Dman.Utilities.Logger;
+
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -83,7 +83,7 @@ namespace Dman.SimpleJson
             }
             catch (Exception e) when (e is JsonException or ArgumentException) 
             {
-                Log.Error($"Failed to load data of type {objectType} for key {key}. Raw json: {existing}");
+                Debug.LogError($"Failed to load data of type {objectType} for key {key}. Raw json: {existing}");
                 value = default;
                 return false;
             }

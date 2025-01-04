@@ -1,5 +1,5 @@
 using System.IO;
-using Dman.Utilities.Logger;
+
 using UnityEngine;
 
 namespace Dman.SimpleJson
@@ -21,7 +21,7 @@ namespace Dman.SimpleJson
         public TextWriter WriteTo(string contextKey)
         {
             string filePath = EnsureSaveFilePath(contextKey);
-            Log.Info($"Saving to {filePath}");
+            Debug.Log($"Saving to {filePath}");
             return new StreamWriter(filePath, append: false);
         }
 
@@ -30,10 +30,10 @@ namespace Dman.SimpleJson
             var filePath = EnsureSaveFilePath(contextKey);
             if (!File.Exists(filePath))
             {
-                Log.Warning($"No file found at {filePath}");
+                Debug.LogWarning($"No file found at {filePath}");
                 return null;
             }
-            Log.Info($"Reading from {filePath}");
+            Debug.Log($"Reading from {filePath}");
             return new StreamReader(filePath);
         }
 
