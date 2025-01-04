@@ -18,15 +18,5 @@
       "description": "A simple example of how to use the save system, demonstrated with an Immediate-mode GUI interface.",
       "path": "Samples~/SampleOnGui"
     }
-  ],
-  "scopedRegistries": [
-    {
-      "name": "package.openupm.com",
-      "url": "https://package.openupm.com",
-      "scopes": [
-        "com.cysharp.unitask",
-        "com.dman.utilities"
-      ]
-    }
   ]
 }
