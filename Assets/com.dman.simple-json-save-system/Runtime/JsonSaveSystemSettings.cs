@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Dman.SimpleJson.FancyJsonSerializer;
 using Newtonsoft.Json;
@@ -11,12 +12,49 @@ namespace Dman.SimpleJson
         /// <summary>
         /// The save folder under which all files are saved
         /// </summary>
-        public static string FullSaveFolderPath => Path.Combine(Application.persistentDataPath, Singleton.saveFolderName);
+        public static string FullSaveFolderPath => Path.Combine(Singleton.GetParentFolderPath(), Singleton.saveFolderName);
         public static string DefaultSaveFileName => Singleton.defaultSaveFileName;
         
         [Header("All values are read on first use of save system. Changes during runtime are ignored.")]
         [SerializeField] protected string saveFolderName = "SaveContexts";
         [SerializeField] protected string defaultSaveFileName = "root";
+
+        public enum SaveFolderMode
+        {
+            PersistentDataPathAlways,
+            ExecutablePathAlways,
+            PersistentDataPathInEditorExecutableInRuntime,
+        }
+        
+        [SerializeField] protected SaveFolderMode parentFolderMode = SaveFolderMode.ExecutablePathAlways;
+
+        private string GetParentFolderPath()
+        {
+            switch (parentFolderMode)
+            {
+                case SaveFolderMode.PersistentDataPathAlways:
+                    return Application.persistentDataPath;
+                case SaveFolderMode.ExecutablePathAlways:
+                    return GetExecutablePath();
+                case SaveFolderMode.PersistentDataPathInEditorExecutableInRuntime:
+                    return Application.isEditor ? Application.persistentDataPath : GetExecutablePath();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        private string GetExecutablePath()
+        {
+            var path = Application.dataPath;
+            if (Application.platform == RuntimePlatform.OSXPlayer) {
+                path += "/../../";
+            }
+            else if (Application.platform == RuntimePlatform.WindowsPlayer) {
+                path += "/../";
+            }
+
+            return path;
+        }
+        
         
         public static JsonSerializer Serializer => _defaultSerializer ??= Singleton.CreateSerializer();
         private static JsonSerializer _defaultSerializer;
