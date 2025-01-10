@@ -22,11 +22,11 @@ namespace Dman.SimpleJson
         public enum SaveFolderMode
         {
             PersistentDataPathAlways,
-            ExecutablePathAlways,
-            PersistentDataPathInEditorExecutableInRuntime,
+            ParentOfExecutablePathAlways,
+            PersistentDataPathInEditorParentOfExecutableInRuntime,
         }
         
-        [SerializeField] protected SaveFolderMode parentFolderMode = SaveFolderMode.ExecutablePathAlways;
+        [SerializeField] protected SaveFolderMode parentFolderMode = SaveFolderMode.ParentOfExecutablePathAlways;
 
         private string GetParentFolderPath()
         {
@@ -34,22 +34,22 @@ namespace Dman.SimpleJson
             {
                 case SaveFolderMode.PersistentDataPathAlways:
                     return Application.persistentDataPath;
-                case SaveFolderMode.ExecutablePathAlways:
-                    return GetExecutablePath();
-                case SaveFolderMode.PersistentDataPathInEditorExecutableInRuntime:
-                    return Application.isEditor ? Application.persistentDataPath : GetExecutablePath();
+                case SaveFolderMode.ParentOfExecutablePathAlways:
+                    return GetParentOfExecutablePath();
+                case SaveFolderMode.PersistentDataPathInEditorParentOfExecutableInRuntime:
+                    return Application.isEditor ? Application.persistentDataPath : GetParentOfExecutablePath();
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
-        private string GetExecutablePath()
+        private string GetParentOfExecutablePath()
         {
             var path = Application.dataPath;
             if (Application.platform == RuntimePlatform.OSXPlayer) {
-                path += "/../../";
+                path += "/../../../";
             }
             else if (Application.platform == RuntimePlatform.WindowsPlayer) {
-                path += "/../";
+                path += "/../../";
             }
 
             return path;
