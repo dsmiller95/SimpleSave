@@ -1,6 +1,6 @@
 {
   "name": "com.dman.simple-json-save-system",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "displayName": "Dman Simple Json Save System",
   "description": "A simple save system that attempts to look a lot like the PlayerPrefs API, but saves data into a json file.",
   "unity": "2020.1",
