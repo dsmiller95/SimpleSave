@@ -59,6 +59,24 @@ namespace Dman.SimpleJson.Tests
         }
         
         [Test]
+        public void WhenSetsBool_CanGetBool()
+        {
+            SimpleSave.SetBool("testKey1", true);
+            SimpleSave.SetBool("testKey2", false);
+            
+            Assert.AreEqual(SimpleSave.GetBool("testKey1", defaultValue: false), true);
+            Assert.AreEqual(SimpleSave.GetBool("testKey2", defaultValue: true), false);
+        }
+        
+        [Test]
+        public void WhenSetsBool_CanGetString()
+        {
+            SimpleSave.SetBool("testKey", true);
+            
+            Assert.AreEqual("True", SimpleSave.GetString("testKey"));
+        }
+
+        [Test]
         public void WhenSetsString_HasKeySwitchesToTrue()
         {
             Assert.IsFalse(SimpleSave.HasKey("testKey"));
