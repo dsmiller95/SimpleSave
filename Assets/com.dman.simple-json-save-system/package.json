@@ -1,11 +1,11 @@
 {
   "name": "com.dman.simple-json-save-system",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "displayName": "Dman Simple Json Save System",
   "description": "A simple save system that attempts to look a lot like the PlayerPrefs API, but saves data into a json file.",
   "unity": "2020.1",
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "3.0.2"
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
   },
   "author": {
     "name": "Dan Miller",
